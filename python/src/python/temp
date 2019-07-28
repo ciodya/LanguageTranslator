@@ -1,0 +1,81 @@
+//	@Override
+//	public python.Type visitVoid_func_def(Void_func_defContext ctx) {		//void_func
+//		typeTable.enterLocalScope();
+//		List<ParameterContext> par_list = ctx.parameterlist().parameter();//parameter list
+//		ArrayList<Type> array = new ArrayList<Type>();
+//		Type seqtype ;
+//		if(par_list != null) {//one or more parameters
+//			for (pythonParser.ParameterContext par : par_list) {
+//				Type t = retrieve(par.NAME().getText(), par);
+//				array.add(t);
+//			}
+//			seqtype = new Type.Sequence(array);//parameter type
+//		}
+//		else
+//			seqtype = Type.EMPTY;//no parameters
+//		
+//		visit(ctx.suite());
+//		
+//		Type functype = new Type.Mapping(seqtype, Type.VOID);//function type
+//	    define(ctx.NAME().getText(), functype, ctx);	// put function type  into type table
+//		typeTable.exitLocalScope();
+//		
+//		define(ctx.NAME().getText(), functype, ctx);
+//		
+//		return null;
+//	}
+//
+//	@Override
+//	public python.Type visitNotVoid_func_def(NotVoid_func_defContext ctx) {	//notVoid_func
+//		typeTable.enterLocalScope();	
+//		ParameterlistContext pl = ctx.parameterlist();//parameter list
+//		List<ParameterContext> par_list = pl.parameter();
+//		ArrayList<Type> array = new ArrayList<Type>();
+//		Type seqtype ;
+//		if(par_list != null) {//one or more parameters
+//			for (pythonParser.ParameterContext par : par_list) {
+//				Type t = retrieve(par.NAME().getText(), par);
+//				array.add(t);
+//			}
+//			seqtype = new Type.Sequence(array);//parameter type
+//		}
+//		else
+//			seqtype = Type.EMPTY;//no parameters
+//		
+//		Type rettype = visit(ctx.r);
+//		
+//		Type functype = new Type.Mapping(seqtype, rettype);//function type
+//	    define(ctx.NAME().getText(), functype, ctx);	// put function type  into type table
+//		typeTable.exitLocalScope();
+//		
+//		define(ctx.NAME().getText(), functype, ctx);
+//		return null;
+//	}
+
+//	private boolean isNumeric(String str){
+//		   Pattern pattern = Pattern.compile("[0-9]*");
+//		   Matcher isNum = pattern.matcher(str);
+//		   if( !isNum.matches() ){
+//		       return false;
+//		   }
+//		   return true;
+//		}
+
+
+//	RETURN (';')? NEWLINE								#void_func_def
+//	|'def' NAME parameterlist  ':' suite RETURN r= test (',' test)* (',')? (';')? NEWLINE 	#notVoid_func_def
+
+
+//		List<ParameterContext> par_list = pl.parameter();
+//		ArrayList<Type> array = new ArrayList<Type>();
+//		Type seqtype ;
+//		if(par_list != null) {//one or more parameters
+//			for (pythonParser.ParameterContext par : par_list) {
+//				Type t = retrieve(par.NAME().getText(), par);
+//				array.add(t);
+//			}
+//			seqtype = new Type.Sequence(array);//parameter type
+//		}
+//		else
+//			seqtype = Type.EMPTY;//no parameters
+//		visit(ctx.suite());

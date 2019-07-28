@@ -1,0 +1,163 @@
+/*
+ C 2011 grammar built from the C11 Spec 
+ * 
+ * The grammar is based on the file of following Github:
+ * https://github.com/antlr/grammars-v4/blob/master/c/C.g4
+ * 
+ * All comments that start with "///" are copy-pasted from
+ * The C Language Reference
+ * 
+ */
+	
+grammar C;
+
+// Parser rules
+
+//Declaration
+externalDeclaration
+    :   functionDefinition											
+    |   initDeclaratorList ';'
+    ;
+    
+typeSpecifier
+    :  'void'							#void
+    |   'char'							#char
+    |   'int'    						#int
+    |   '_Bool'							#bool
+    ;
+    
+initDeclaratorList
+    :   typeSpecifier (Identifier | Identifier '=' c1= assignmentExpression)
+   		 (',' (Identifier | Identifier '=' c2=assignmentExpression))?			#var_del
+    ;
+
+directDeclarator
+    :   Identifier
+    |   '(' directDeclarator ')'
+    |   directDeclarator '(' 
+    		typeSpecifier+ directDeclarator  (',' typeSpecifier+ directDeclarator)? ')'
+    |   directDeclarator '('  (Identifier (',' Identifier)?)? ')'
+    ;    
+    
+functionDefinition
+    :   typeSpecifier id= Identifier '(' 
+    		typeSpecifier par= Identifier  (',' typeSpecifier Identifier)? ')' 
+    		'{' blockItemList? '}'															#void_func
+	|	typeSpecifier id= Identifier '(' 
+    		typeSpecifier par= Identifier  (',' typeSpecifier Identifier)? ')'  			
+    		'{' blockItemList? Return assignmentExpression ';' '}'							#notvoid_func
+    ;
+
+blockItemList
+    :   (statement |  initDeclaratorList ';')
+    |   blockItemList (statement |  initDeclaratorList ';')
+    ;
+   
+//Expression	
+expression
+    :   assignmentExpression
+    |   expression ',' assignmentExpression
+    ;
+
+assignmentExpression
+    :   additiveExpression																	#additive_Expression_only
+    |   assignmentExpression '<' additiveExpression											#LT_Expression
+    |   assignmentExpression '>' additiveExpression											#MT_Expression
+    |   assignmentExpression '==' additiveExpression										#eqal_Expression
+    |   assignmentExpression '!=' additiveExpression										#not_eqal_Expression
+    ;
+
+additiveExpression
+    :   multiplicativeExpression
+    |   additiveExpression '+' multiplicativeExpression
+    |   additiveExpression '-' multiplicativeExpression
+    ;
+    
+multiplicativeExpression
+    :   castExpression
+    |   multiplicativeExpression '*' castExpression
+    |   multiplicativeExpression '/' castExpression
+    ;
+    
+castExpression
+    :   DigitSequence																		#num
+    ;
+
+//Statement
+statement
+    :   '{' blockItemList? '}'																#compound_stmt
+    |   expression? ';'																		#expr_stmt
+    |   'if' '(' assignmentExpression ')' c1=statement ('else' c2=statement)?				#if_stmt	
+    |   While '(' expression ')' statement      											#while_stmt
+    |	Identifier '(' (DigitSequence | Identifier | expression 
+    		(',' DigitSequence | Identifier | expression )?) ')'							#funccall
+    ;
+   
+// Lexicon
+Bool : '_Bool';
+Char : 'char';
+Else : 'else';
+If : 'if';
+Int : 'int';
+Return : 'return';
+While : 'while';
+Void : 'void';
+
+Equal : '==';
+Less : '<';
+Greater : '>';
+Plus : '+';
+Minus : '-';
+Star : '*';
+Div : '/';
+
+Assign : '=';
+
+LeftParen : '(';
+RightParen : ')';
+LeftBrace : '{';
+RightBrace : '}';
+Semi : ';';
+
+Identifier
+    :   Nondigit
+        (   Nondigit
+        |   Digit
+        )*
+    ;
+    
+DigitSequence
+    :   Digit+
+    ;
+
+fragment
+Nondigit
+    :   [a-zA-Z_]
+    ;
+
+fragment
+Digit
+    :   [0-9]
+    ;
+
+Whitespace
+    :   [ \t]+
+        -> skip
+    ;
+
+Newline
+    :   (   '\r' '\n'?
+        |   '\n'
+        )
+        -> skip
+    ;
+
+BlockComment
+    :   '/*' .*? '*/'
+        -> skip
+    ;
+
+LineComment
+    :   '//' ~[\r\n]*
+        -> skip
+;

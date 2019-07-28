@@ -1,0 +1,8 @@
+
+//for_stmt: 'for' exprlist 'in' testlist ':' suite ('else' ':' suite)?;
+//comp_for:  'for' exprlist 'in' ('not' comparison | comparison)  (comp_for | comp_if)?;
+//flow_stmt: 
+//			 'break'
+//			| 'continue'
+//			| 'return' (test (',' test)* (',')?)?;
+//exprlist: (expr|'*' expr) (',' (expr|'*' expr))* (',')?;
