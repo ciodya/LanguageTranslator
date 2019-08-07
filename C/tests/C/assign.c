@@ -5,6 +5,6 @@ void main(){
 	g = g+1;
 	g = 1+2*g;
 	g = (1+2)*g;
-	puts(g);
+	printf(g);
 }
 

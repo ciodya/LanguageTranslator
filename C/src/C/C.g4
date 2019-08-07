@@ -15,7 +15,7 @@ grammar C;
 
 //Declaration
 externalDeclaration
-    : (functionDefinition |   initDeclaratorList ';')* EOF
+    : (functionDefinition | ( initDeclaratorList ';') | (funccall ';'))* EOF
     ;
     
 typeSpecifier
@@ -25,15 +25,19 @@ typeSpecifier
     |   '_Bool'																				#bool
     ;
     
+funccall
+	: Identifier '(' actual? ')'
+	;
+	
 initDeclaratorList
-    :   typeSpecifier (id1= Identifier | id2= Identifier '=' c1= expression)
-   		 (',' (id3= Identifier | id4= Identifier '=' c2= expression))?						#var_del
+    :   typeSpecifier (id1= Identifier | (id2= Identifier '=' c1= expression))
+   		 (',' (id3= Identifier | (id4= Identifier '=' c2= expression)))?						#var_del
     ;
 functionDefinition
-    :   c1= typeSpecifier id1= Identifier '(' parameterlist? ')' 
-    		'{' blockItemList* '}'															#void_func
-	|	c2= typeSpecifier id2= Identifier '(' parameterlist? ')'  			
-    		'{'blockItemList* Return expression ';' '}'										#notvoid_func
+    :   (c1= typeSpecifier id1= Identifier '(' parameterlist? ')' 
+    		'{' blockItemList* '}')															#void_func
+	|	(c2= typeSpecifier id2= Identifier '(' parameterlist? ')'  			
+    		'{'blockItemList* Return expression ';' '}')									#notvoid_func
     ;
     
 parameterlist
@@ -44,38 +48,35 @@ parameter
 	:	typeSpecifier Identifier
 	;
 
-blockItemList
-    :   (statement |  (initDeclaratorList ';'))
-    |   blockItemList (statement |  (initDeclaratorList ';'))
+blockItemList 
+    :   (statement |  (initDeclaratorList ';'))+
     ;
    
 //Expression	
 expression
-    :   e3= arithExpression																		
-    |   e1= expression ('<' | '>' | '==' | '!=') e2= arithExpression				
+    :   e1= arithExpression (op= (Less | Greater | Equal | NotEqual) e2= arithExpression)*			
     ;
 
 arithExpression
-    :   e3= castExpression
-    |   e1= arithExpression ('+' | '-' | '*' | '/')  e2= castExpression
+    :   e1= castExpression (op= (Plus | Minus | Star | Div)  e2= castExpression)*
     ;
     
 castExpression
     :   DigitSequence																		#num						
     |	Identifier																			#id
-    |	'(' expression ')'																	#parens
-    |	Identifier '(' actual? ')'															#func_call
-    |	'\''(Identifier | DigitSequence | Whitespace)'\''									#char_value
+    |	('(' expression ')')																#parens
+    |	(Identifier '(' actual? ')')														#func_call
+    |	('\''e1= CharValue'\'')																#char_value
     ;
 
 //Statement
 statement
-    :   '{' blockItemList? '}'																#compound_stmt
-    |   expression? ';'																		#expr_stmt
-    |   If '(' expression ')' c1=statement (Else c2=statement)?								#if_stmt	
-    |   While '(' expression ')' statement      											#while_stmt
-    |	id= Identifier '(' actual? ')'	';'													#funccall
-    |	Identifier '='  expression	';'														#assn_stmt
+    :   ('{' blockItemList? '}')															#compound_stmt
+    |   (expression? ';')																	#expr_stmt
+    |   (If '(' expression ')' c1=statement (Else c2=statement)?)							#if_stmt	
+    |   (While '(' expression ')' statement)      											#while_stmt
+    |	(funccall ';')																		#func_stmt
+    |	(Identifier '='  expression	';')													#assn_stmt
     ;
     
 actual
@@ -93,6 +94,7 @@ While : 'while';
 Void : 'void';
 
 Equal : '==';
+NotEqual : '!=';
 Less : '<';
 Greater : '>';
 Plus : '+';
@@ -117,6 +119,11 @@ Identifier
     
 DigitSequence
     :   Digit+
+    ;
+    
+CharValue
+	: Nondigit
+    | Digit
     ;
 
 fragment

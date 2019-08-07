@@ -9,10 +9,11 @@ void add (int inc){
 void main (){
 // Read numbers until a 0 is read.
 // Print their total.
-	int i = gets();
+	int i ;
+	scanf(i);
 	while (i > 0){
 		add(i);
-		i = gets();
+		scanf(i);
 	}
-	puts(total);
+	printf(total);
 }

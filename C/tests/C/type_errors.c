@@ -12,9 +12,9 @@ void main(){
 	i = b; //error
 	i = b*2; //error
 	b = i>0;
-	if(b) puts(i);
-	if(1) puts(i+1);
-	if(i) puts(i); //error
+	if(b) printf(i);
+	if(1) printf(i+1);
+	if(i) printf(i); //error
 	b = pos('1'); //error
 	while(pos(7)){
 		i = i+1;

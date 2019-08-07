@@ -45,6 +45,12 @@ public interface CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBool(CParser.BoolContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CParser#funccall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunccall(CParser.FunccallContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code var_del}
 	 * labeled alternative in {@link CParser#initDeclaratorList}.
 	 * @param ctx the parse tree
@@ -159,12 +165,12 @@ public interface CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWhile_stmt(CParser.While_stmtContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code funccall}
+	 * Visit a parse tree produced by the {@code func_stmt}
 	 * labeled alternative in {@link CParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunccall(CParser.FunccallContext ctx);
+	T visitFunc_stmt(CParser.Func_stmtContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code assn_stmt}
 	 * labeled alternative in {@link CParser#statement}.

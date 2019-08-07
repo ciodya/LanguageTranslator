@@ -15,6 +15,7 @@ import C.CParser.Compound_stmtContext;
 import C.CParser.ExpressionContext;
 import C.CParser.ExternalDeclarationContext;
 import C.CParser.Func_callContext;
+import C.CParser.Func_stmtContext;
 import C.CParser.FunccallContext;
 import C.CParser.IdContext;
 import C.CParser.NumContext;
@@ -69,9 +70,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	   new SymbolTable<Type>();
 
 	private void predefine () {
-		typeTable.put("gets",
-		   new Type.Mapping(Type.EMPTY, Type.INT));
-		typeTable.put("puts",
+		typeTable.put("scanf",
+		   new Type.Mapping(Type.SEQUENCE, Type.INT));
+		typeTable.put("printf",
 		   new Type.Mapping(Type.SEQUENCE,Type.EMPTY));
 	}
 
@@ -303,7 +304,15 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 
 	@Override
 	public Type visitFunccall(FunccallContext ctx) {						//funccall
-	    return null;
+		Type t;
+		Type t1;
+		if(ctx.actual() != null)
+			t = visit(ctx.actual());
+		else
+			t = Type.EMPTY;
+		t1 = checkCall(ctx.Identifier().getText(), t, ctx);
+		System.out.println("Function " + ctx.Identifier().getText() + "is CALLED.");
+	    return t1;
 	}
 
 	@Override
@@ -346,35 +355,27 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	@Override
 	public Type visitExpression(ExpressionContext ctx) {					//Expression
 		Type t1;
-		if(ctx.e1 != null) {
-			t1 = visit(ctx.e1);
-			    if (ctx.e2 != null) {
-					Type t2 = visit(ctx.e2);
-					return checkBinary(COMPTYPE, t1, t2, ctx);
-			    }
-			    else {
-			    	return t1;
-			    }
-		}
-		else
-			return visit(ctx.e3);
+		t1 = visit(ctx.e1);
+		    if (ctx.e2 != null) {
+				Type t2 = visit(ctx.e2);
+				return checkBinary(COMPTYPE, t1, t2, ctx);
+		    }
+		    else {
+		    	return t1;
+		    }
 	}
 
 	@Override
 	public Type visitArithExpression(ArithExpressionContext ctx) {			//arithExpression
 		Type t1;
-		if(ctx.e1 != null) {
-			t1 = visit(ctx.e1);
-			    if (ctx.e2 != null) {
-					Type t2 = visit(ctx.e2);
-					return checkBinary(ARITHTYPE, t1, t2, ctx);
-			    }
-			    else {
-			    	return t1;
-			    }
-		}
-		else
-			return visit(ctx.e3);
+		t1 = visit(ctx.e1);
+		    if (ctx.e2 != null) {
+				Type t2 = visit(ctx.e2);
+				return checkBinary(ARITHTYPE, t1, t2, ctx);
+		    }
+		    else {
+		    	return t1;
+		    }
 	}
 
 	@Override
@@ -425,5 +426,11 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	@Override
 	public Type visitChar_value(Char_valueContext ctx) {					//char_value
 		return Type.CHAR;
+	}
+
+	@Override
+	public Type visitFunc_stmt(Func_stmtContext ctx) {
+		visit(ctx.funccall());
+		return null;
 	}
 }

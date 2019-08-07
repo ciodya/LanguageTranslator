@@ -7,5 +7,5 @@ int test (int a, int b){
 }
 
 void main (){
-        puts(test(2,3));
+        printf(test(2,3));
 }
