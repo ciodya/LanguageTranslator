@@ -156,12 +156,20 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	
 	public Type visitIf_stmt(CParser.If_stmtContext ctx) {					//if-stmt
 		System.out.println("get into IF-ELSE");
-	    Type t = visit(ctx.expression());
+	    Type t = visit(ctx.e1);
+	    Type t1;
 	    if(t == Type.INT)
 	    	t = Type._BOOL;
 	    visit(ctx.c1);
-	    if (ctx.c2 != null)
-		visit(ctx.c2);
+	    if (ctx.e2 != null) {
+	    	t1 = visit(ctx.e2);
+	    	if(t1 == Type.INT)
+		    	t1 = Type._BOOL;
+	    	checkType(Type._BOOL, t1, ctx);
+	    	visit(ctx.c2);
+	    }
+	    if (ctx.c3 != null)
+		visit(ctx.c3);
 	    checkType(Type._BOOL, t, ctx);
 	    System.out.println("exit IF-ELSE");
 	    return null;

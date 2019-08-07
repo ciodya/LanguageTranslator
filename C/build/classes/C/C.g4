@@ -12,10 +12,9 @@
 grammar C;
 
 // Parser rules
-
 //Declaration
 externalDeclaration
-    : (functionDefinition | ( initDeclaratorList ';') | (funccall ';'))* EOF
+    : (functionDefinition |  initDeclaratorList  | funccall )* EOF
     ;
     
 typeSpecifier
@@ -26,12 +25,12 @@ typeSpecifier
     ;
     
 funccall
-	: Identifier '(' actual? ')'
+	: Identifier '(' actual? ')' ';'
 	;
 	
 initDeclaratorList
     :   typeSpecifier (id1= Identifier | (id2= Identifier '=' c1= expression))
-   		 (',' (id3= Identifier | (id4= Identifier '=' c2= expression)))?						#var_del
+   		 (',' (id3= Identifier | (id4= Identifier '=' c2= expression)))? ';'				#var_del
     ;
 functionDefinition
     :   (c1= typeSpecifier id1= Identifier '(' parameterlist? ')' 
@@ -49,7 +48,7 @@ parameter
 	;
 
 blockItemList 
-    :   (statement |  (initDeclaratorList ';'))+
+    :   (statement |  (initDeclaratorList))+
     ;
    
 //Expression	
@@ -73,7 +72,8 @@ castExpression
 statement
     :   ('{' blockItemList? '}')															#compound_stmt
     |   (expression? ';')																	#expr_stmt
-    |   (If '(' expression ')' c1=statement (Else c2=statement)?)							#if_stmt	
+    |   (If '(' e1= expression ')' c1=statement 
+    	(Elseif '(' e2= expression ')' c2=statement)? (Else c3=statement)?)					#if_stmt	
     |   (While '(' expression ')' statement)      											#while_stmt
     |	(funccall ';')																		#func_stmt
     |	(Identifier '='  expression	';')													#assn_stmt
@@ -88,6 +88,7 @@ Bool : '_Bool';
 Char : 'char';
 Else : 'else';
 If : 'if';
+Elseif : 'else if';
 Int : 'int';
 Return : 'return';
 While : 'while';
