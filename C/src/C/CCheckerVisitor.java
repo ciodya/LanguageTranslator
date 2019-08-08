@@ -10,6 +10,7 @@ import C.CParser.ActualContext;
 import C.CParser.ArithExpressionContext;
 import C.CParser.Assn_stmtContext;
 import C.CParser.BlockItemListContext;
+import C.CParser.Char_arrayContext;
 import C.CParser.Char_valueContext;
 import C.CParser.Compound_stmtContext;
 import C.CParser.ExpressionContext;
@@ -157,17 +158,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	public Type visitIf_stmt(CParser.If_stmtContext ctx) {					//if-stmt
 		System.out.println("get into IF-ELSE");
 	    Type t = visit(ctx.e1);
-	    Type t1;
 	    if(t == Type.INT)
 	    	t = Type._BOOL;
 	    visit(ctx.c1);
-	    if (ctx.e2 != null) {
-	    	t1 = visit(ctx.e2);
-	    	if(t1 == Type.INT)
-		    	t1 = Type._BOOL;
-	    	checkType(Type._BOOL, t1, ctx);
-	    	visit(ctx.c2);
-	    }
 	    if (ctx.c3 != null)
 		visit(ctx.c3);
 	    checkType(Type._BOOL, t, ctx);
@@ -437,8 +430,13 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	}
 
 	@Override
-	public Type visitFunc_stmt(Func_stmtContext ctx) {
+	public Type visitFunc_stmt(Func_stmtContext ctx) {						//Func_stmt
 		visit(ctx.funccall());
 		return null;
+	}
+
+	@Override
+	public Type visitChar_array(Char_arrayContext ctx) {					//Char_array
+		return Type.CHAR;
 	}
 }

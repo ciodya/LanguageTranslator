@@ -106,26 +106,26 @@ input
 	
 functionCall
 	:
-	(var= NAME '=')? func= ('input' | 'print')  '(' testlist? ')'
+	(var= NAME ASSIGN)? func= ('input' | 'print')  '(' testlist? ')'
 	;
 	
 return_stmt
-	: RETURN test? (';')? 
+	: RETURN test? (SEMI_COLON)? 
 	;
 	
 small_stmt
 	: 
-	e1= testlist ('=' e2= testlist)?  (';')? (NEWLINE | EOF)
+	e1= testlist (ASSIGN e2= testlist)?  (SEMI_COLON)? (NEWLINE | EOF)
 	;
 
 testlist
 	: 
-	test (',' test)* (',')?
+	test (COMMA test)* (COMMA)?
 	;	
 
 test
 	: 
-	('not' e1= comparison) 
+	(NOT e1= comparison) 
 	| e2= comparison
 	;
 
@@ -142,10 +142,10 @@ expr
 atom
 	: (NAME)													#id 
     | (NUMBER) 													#num
-    | ('"'(NAME | NUMBER | COMMA | DOT)*'"')					#string
-    | ('True') 													#true
-    | ('False')													#false
-    | (NAME '(' ( test (',' test )* )? ')')						#funccall
+    | ('"'(NAME | NUMBER | COMMA | DOT | SPACES)*'"')			#string
+    | (TRUE) 													#true
+    | (FALSE)													#false
+    | (NAME '(' ( test (COMMA test )* )? ')')					#funccall
     | ('(' test ')'	)											#parens
     ;
 //compound_stmt
@@ -157,7 +157,7 @@ compound_stmt
 //if
 if_stmt
 	: 
-	IF t1= test ':' s1= suite (ELIF t2= test ':' s2= suite)* (ELSE ':' s3= suite)? 
+	IF t1= test COLON s1= suite (ELIF t2= test COLON s2= suite)* (ELSE COLON s3= suite)? 
 	;
 
 suite
@@ -166,22 +166,22 @@ suite
 	
 //while
 while_stmt
-	: WHILE test ':' s1= suite (ELSE ':'s2=  suite)?
+	: WHILE test COLON s1= suite (ELSE COLON s2=  suite)?
 	;
 	
 //funcdef
 funcdef
-	: DEF NAME parameterlist  ':' suite 
+	: DEF NAME parameterlist  COLON suite 
 	; 
 
 parameterlist
 	:
-	'(' ( parameter (',' parameter )* )? ')'
+	'(' ( parameter (COMMA parameter )* )? ')'
 	;
 	
 parameter
 	:
-	NAME (':' test)?
+	NAME (COLON test)?
 	;	
 	
 /*
@@ -236,7 +236,7 @@ SKIP_
  | '0'+
  ;
  
- fragment SPACES
+SPACES
  : [ \t]+
  ;
 

@@ -8,9 +8,6 @@ void main(){
 		a = a + 1;
 		printf(a);
 		}
-	else if(a = 0){
-		a = 3;
-	}
 	else{
 		b = b + 1;
 		printf(b);

@@ -137,6 +137,13 @@ public interface CVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitChar_value(CParser.Char_valueContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code char_array}
+	 * labeled alternative in {@link CParser#castExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitChar_array(CParser.Char_arrayContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code compound_stmt}
 	 * labeled alternative in {@link CParser#statement}.
 	 * @param ctx the parse tree

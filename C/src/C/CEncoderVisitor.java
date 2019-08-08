@@ -10,6 +10,7 @@ import C.CParser.Assn_stmtContext;
 import C.CParser.BlockItemListContext;
 import C.CParser.BoolContext;
 import C.CParser.CharContext;
+import C.CParser.Char_arrayContext;
 import C.CParser.Char_valueContext;
 import C.CParser.Compound_stmtContext;
 import C.CParser.Expr_stmtContext;
@@ -46,6 +47,9 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitVar_del(Var_delContext ctx) {
 		for(int i = 0; i < infunc; i++)
 			obj.addCode("\t");
+		if(ctx.id1 != null) {
+			
+		}
 		if(ctx.id2 != null) {
 			String inst = "";
 			inst += ctx.id2.getText() + " = ";
@@ -170,6 +174,11 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 		return null;
 	}
 	@Override
+	public Void visitChar_array(Char_arrayContext ctx) {
+		obj.addCode(ctx.getText());
+		return null;
+	}
+	@Override
 	public Void visitParens(ParensContext ctx) {
 		obj.addCode("(");
 		visit(ctx.expression());
@@ -237,14 +246,6 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 		visit(ctx.e1);
 		obj.addCode(": \n");
 		visit(ctx.c1);
-		if(ctx.e2 != null) {
-			for(int i = 0; i < infunc-1; i++)
-				obj.addCode("\t");
-			obj.addCode("elif ");
-			visit(ctx.e2);
-			obj.addCode(": \n");
-			visit(ctx.c2);
-		}
 		if(ctx.c3 != null) {
 			for(int i = 0; i < infunc-1; i++)
 				obj.addCode("\t");
@@ -324,4 +325,5 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitParameter(ParameterContext ctx) {
 		return null;
 	}
+	
 }

@@ -93,6 +93,7 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 		    	}
 		    	int index = e1.indexOf(i);
 		    	temp = e2.get(index).getText();
+		    	boolean flag = false;
 		    	
 		    	//specify variable type
 		    	if(!var_list.contains(i.getText()) && !local_var_list.contains(i.getText())) {	//variable is not defined yet
@@ -109,6 +110,10 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 			    	}
 			    	else if(temp.trim().contains("\""))	//string
 			    		typespecifier = "char";	
+			    	else if(temp.trim().contains("not")) {
+			    		typespecifier = "_Bool ";
+			    		flag = true;
+			    	}
 			    	else 
 			    		typespecifier = "int ";
 			    	obj.addCode(typespecifier);
@@ -116,9 +121,12 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 		    	//generate assignment statement in C style
 		    	if(typespecifier.equals("char"))
 		    		obj.addCode("[] ");
-		    	obj.addCode(i.getText());
+		    	visit(i);
 		    	obj.addCode(" = ");
-		    	obj.addCode(temp);
+		    	if(typespecifier.trim().equals("_Bool") && flag == false)
+		    		obj.addCode(temp);
+		    	else
+		    		visit(e2.get(index));
 		    	var_list.add(i.getText());
 		    	count++;
 		    }
@@ -138,12 +146,19 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 	@Override
 	public Void visitTest(TestContext ctx) {
 		if(ctx.e1 != null) {
-			obj.addCode("!(");
-			visitChildren(ctx);
-			obj.addCode(")");
+			if(ctx.e1.getText().contains("("))
+			{
+				obj.addCode("!");
+				visit(ctx.e1);
+			}
+			else {
+				obj.addCode("!(");
+				visit(ctx.e1);
+				obj.addCode(")");
+			}
 		}
 		else
-			visitChildren(ctx);
+			visit(ctx.e2);
 		return null;
 	}
 	@Override

@@ -10,7 +10,6 @@ int fac (int n){  // Return n!
 		f = 2;
 	else
 		f = 3;
-	
 	return f ;
 }
 
@@ -21,7 +20,7 @@ void main(){
 	scanf(num);
 	while (num != 0){
 		if (verbose) printf(num);
-		printf(fac(num));
+		printf(fac(num) + 1);
 		scanf(num);
 	}
 }

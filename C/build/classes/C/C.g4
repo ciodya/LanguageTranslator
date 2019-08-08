@@ -18,29 +18,32 @@ externalDeclaration
     ;
     
 typeSpecifier
-    :  'void'																				#void
-    |   'char'																				#char
-    |   'int'    																			#int
-    |   '_Bool'																				#bool
+    :  Void																				#void
+    |   Char																			#char
+    |   Int    																			#int
+    |   Bool																			#bool
     ;
     
 funccall
-	: Identifier '(' actual? ')' ';'
+	: Identifier LeftParen actual? RightParen Semi
 	;
 	
 initDeclaratorList
-    :   typeSpecifier (id1= Identifier | (id2= Identifier '=' c1= expression))
-   		 (',' (id3= Identifier | (id4= Identifier '=' c2= expression)))? ';'				#var_del
+    :   typeSpecifier (id1= Identifier ('[' DigitSequence ']')?
+    					| (id2= Identifier ('[' DigitSequence ']')? Assign c1= expression))
+   		 (Comma (id3= Identifier ('[' DigitSequence ']')?
+   		 		| (id4= Identifier ('[' DigitSequence ']')? Assign c2= expression)))? Semi	
+   		 																						#var_del
     ;
 functionDefinition
-    :   (c1= typeSpecifier id1= Identifier '(' parameterlist? ')' 
-    		'{' blockItemList* '}')															#void_func
-	|	(c2= typeSpecifier id2= Identifier '(' parameterlist? ')'  			
-    		'{'blockItemList* Return expression ';' '}')									#notvoid_func
+    :   (c1= typeSpecifier id1= Identifier LeftParen parameterlist? RightParen 
+    		LeftBrace blockItemList* RightBrace)												#void_func
+	|	(c2= typeSpecifier id2= Identifier LeftParen parameterlist? RightParen  			
+    		LeftBrace blockItemList* Return expression Semi RightBrace)							#notvoid_func
     ;
     
 parameterlist
-	:	parameter  (',' parameter)*
+	:	parameter  (Comma parameter)*
 	;
 	
 parameter
@@ -63,24 +66,24 @@ arithExpression
 castExpression
     :   DigitSequence																		#num						
     |	Identifier																			#id
-    |	('(' expression ')')																#parens
-    |	(Identifier '(' actual? ')')														#func_call
-    |	('\''e1= CharValue'\'')																#char_value
+    |	(LeftParen expression RightParen)													#parens
+    |	(Identifier LeftParen actual? RightParen)											#func_call
+    |	( CharValue )																		#char_value
+    |	(CharArray)																			#char_array
     ;
 
 //Statement
 statement
-    :   ('{' blockItemList? '}')															#compound_stmt
-    |   (expression? ';')																	#expr_stmt
-    |   (If '(' e1= expression ')' c1=statement 
-    	(Elseif '(' e2= expression ')' c2=statement)? (Else c3=statement)?)					#if_stmt	
-    |   (While '(' expression ')' statement)      											#while_stmt
-    |	(funccall ';')																		#func_stmt
-    |	(Identifier '='  expression	';')													#assn_stmt
+    :   (LeftBrace blockItemList? RightBrace)												#compound_stmt
+    |   (expression? Semi)																	#expr_stmt
+    |   (If LeftParen e1= expression RightParen c1=statement (Else c3=statement)?)			#if_stmt	
+    |   (While LeftParen expression RightParen statement)      								#while_stmt
+    |	(funccall Semi)																		#func_stmt
+    |	(Identifier Assign  expression	Semi)												#assn_stmt
     ;
     
 actual
-	:	expression (',' expression)*
+	:	expression (Comma expression)*
 	;
    
 // Lexicon
@@ -88,7 +91,6 @@ Bool : '_Bool';
 Char : 'char';
 Else : 'else';
 If : 'if';
-Elseif : 'else if';
 Int : 'int';
 Return : 'return';
 While : 'while';
@@ -110,6 +112,10 @@ RightParen : ')';
 LeftBrace : '{';
 RightBrace : '}';
 Semi : ';';
+Comma : ',';
+Double_quo : '"';
+Dot : '.';
+
 
 Identifier
     :   Nondigit
@@ -123,9 +129,35 @@ DigitSequence
     ;
     
 CharValue
-	: Nondigit
-    | Digit
+	: 	'\'' (Nondigit | Digit) '\''
     ;
+    
+CharArray
+	:	Double_quo (Nondigit | Digit | Punc | Oprator | Whitespace | Newline)* Double_quo
+	;
+	
+Punc
+	: Comma
+	| 	Dot
+	|	Semi
+	|	LeftParen
+	|	RightParen
+	|	LeftBrace
+	|	RightBrace
+	;
+	
+Oprator
+	:	Assign
+	|	Equal
+	|	NotEqual
+	|	Less
+	|	Greater
+	|	Plus
+	|	Minus
+	|	Star
+	|	Div
+	;
+	
 
 fragment
 Nondigit
