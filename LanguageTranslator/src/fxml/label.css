@@ -1,0 +1,9 @@
+.background {
+	-fx-background-color : #dedede;
+	-fx-border-top: 2px solid black;
+}
+
+.label {
+	-fx-font-family: "Times New Roman", Times, serif;
+	-fx-font-size: 12px;
+}
