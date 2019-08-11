@@ -6,8 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<fx:root type="BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -15,7 +14,7 @@
                <children>
                   <SplitPane dividerPositions="0.5" prefHeight="300.0">
                     <items>
-                        <TextArea fx:id="text1" promptText="Please enter code to be translated" styleClass="text_background" stylesheets="@Layout.css" />
+                        <TextArea fx:id="text1" promptText="Please enter code to be translated" style="-fx-background-radius: 10; -fx-background-color: #dedede;" styleClass="text_background" stylesheets="@Layout.css" />
                         <ScrollBar orientation="VERTICAL" />
                     </items>
                      <VBox.margin>
@@ -51,22 +50,22 @@
    <top>
       <HBox BorderPane.alignment="CENTER">
          <children>
-            <ComboBox fx:id="combbox1" prefHeight="30.0" prefWidth="80.0" promptText="C">
+            <ComboBox fx:id="box1" prefHeight="30.0" prefWidth="80.0" style="-fx-background-radius: 10;">
                <HBox.margin>
                   <Insets bottom="5.0" left="10.0" right="5.0" top="10.0" />
                </HBox.margin>
             </ComboBox>
-            <ComboBox fx:id="combbox2" prefHeight="30.0" prefWidth="80.0" promptText="Python">
-               <HBox.margin>
-                  <Insets bottom="5.0" left="30.0" right="5.0" top="10.0" />
-               </HBox.margin>
-            </ComboBox>
-            <Button fx:id="button" mnemonicParsing="false" prefHeight="30.0" prefWidth="120.0" style="-fx-font-size: 15; -fx-font-family: Times New Roman; -fx-font-weight: bold;" stylesheets="@Layout.css" text="Translate">
+            <ComboBox fx:id="box2" prefHeight="30.0" prefWidth="80.0" style="-fx-background-radius: 10;">
                <HBox.margin>
                   <Insets bottom="5.0" left="50.0" right="5.0" top="10.0" />
+               </HBox.margin>
+            </ComboBox>
+            <Button fx:id="button" mnemonicParsing="false" prefHeight="30.0" prefWidth="120.0" style="-fx-font-size: 15; -fx-font-family: Times New Roman; -fx-font-weight: bold; -fx-background-radius: 5;" stylesheets="@Layout.css" text="Translate">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="80.0" right="5.0" top="10.0" />
                </HBox.margin>
             </Button>
          </children>
       </HBox>
    </top>
-</fx:root>
+</BorderPane>
