@@ -4,19 +4,17 @@ package python;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-import java.io.*;
 
-import python.*;
+import Application.LayoutController;
+
+import java.io.*;
 
 public class pythonRun {
 	private static boolean tracing = false;
 	private static PrintStream out = System.out;
-	public static void main(String[] args) {
+	public static void main(String input,LayoutController controller) {
 		try {
-			if (args.length == 0)
-				throw new pythonException();
-			C objprog = compile(args[0]);
-
+			C objprog = compile(input,controller);
 			out.println("Interpretation ...");
 			objprog.interpret(tracing);
 		} catch (pythonException x) {
@@ -25,20 +23,20 @@ public class pythonRun {
 			x.printStackTrace(out);
 		}
 	}
-	private static C compile (String filename)
+	private static C compile (String input,LayoutController controller)
 			throws Exception {
 		pythonLexer lexer = new pythonLexer(
-				CharStreams.fromFileName(filename));
+				CharStreams.fromString(input));
 		CommonTokenStream tokens = 
 		   new CommonTokenStream(lexer);
 		ParseTree ast =
-		    syntacticAnalyse(tokens);
-		contextualAnalyse(ast,tokens);
-		C objprog = codeGenerate(ast);
+		    syntacticAnalyse(tokens,controller);
+		contextualAnalyse(ast,tokens,controller);
+		C objprog = codeGenerate(ast,controller);
 		return objprog;
 	}
 	private static ParseTree syntacticAnalyse
-			(CommonTokenStream tokens)
+			(CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
 		out.println();
 		out.println("Syntactic analysis ...");
@@ -46,11 +44,14 @@ public class pythonRun {
 	        ParseTree tree = parser.input();
 		int errors = parser.getNumberOfSyntaxErrors();
 		out.println(errors + " syntactic errors");
-		if (errors > 0)
+		if (errors > 0) {
+			controller.syntaxError();
 			throw new pythonException();
+			}
 		return tree;
 	}
-    private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens)
+    private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens
+    										,LayoutController controller)
 			throws Exception {
 		out.println("Contextual analysis ...");
 		pythonCheckerVisitor checker =
@@ -59,18 +60,19 @@ public class pythonRun {
 		int errors = checker.getNumberOfContextualErrors();
 		out.println(errors + " scope/type errors");
 		out.println();
-		if (errors > 0)
+		if (errors > 0) {
+			controller.contextualError();
 			throw new pythonException();
+		}
 	}
-	private static C codeGenerate (ParseTree tree)
+	private static C codeGenerate (ParseTree tree,LayoutController controller)
 			throws Exception  {
-		out.println("Code generation ...");
 		pythonEncoderVisitor encoder =
 		   new pythonEncoderVisitor();
 		encoder.visit(tree);
 		C objectprog = encoder.getC();
-		out.println("Object code:");
-		out.println(objectprog.showCode());
+		String output = objectprog.showCode();
+		controller.setCode(output);
 		return objectprog;
 	}
 	private static class pythonException extends Exception {

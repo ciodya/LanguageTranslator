@@ -12,4 +12,3 @@ void main(){
 	_Bool d = (f>k);
 	printf(g);
 }
-

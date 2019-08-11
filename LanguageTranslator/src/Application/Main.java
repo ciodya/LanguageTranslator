@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application{
 	private Stage primaryStage;
-	private BorderPane mainLayout;
+	private BorderPane Layout;
 	
 //	static Stage window;
 //	static Layout Layout;
@@ -17,11 +17,12 @@ public class Main extends Application{
 	public static void main(String[] args) {
         launch(args);
     }
-	public void showView() throws IOException {
+	private void showView() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(Main.class.getResource("/fxml/Layout.fxml"));
-		mainLayout = loader.load();
-		Scene scene = new Scene(mainLayout);
+		loader.setLocation(Main.class.getResource("Layout.fxml"));
+		Layout = loader.load();
+		loader.setController(Main.class.getResource("LayoutController.java"));
+		Scene scene = new Scene(Layout);
 		primaryStage.setScene(scene);
 	}
 	@Override

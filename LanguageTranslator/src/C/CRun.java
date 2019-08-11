@@ -12,17 +12,16 @@ import C.CCheckerVisitor;
 import C.CEncoderVisitor;
 import C.python;
 
+import Application.LayoutController;
+
 public class CRun {
 	private static boolean tracing = false;
 
 	private static PrintStream out = System.out;
 
-	public static void main(String[] args) {
+	public static void main(String input,LayoutController controller) {
 		try {
-			if (args.length == 0)
-				throw new CException();
-			python objprog = compile(args[0]);
-
+			python objprog = compile(input,controller);
 			out.println("Interpretation ...");
 			objprog.interpret(tracing);
 		} catch (CException x) {
@@ -32,22 +31,22 @@ public class CRun {
 		}
 	}
 
-	private static python compile (String filename)
+	private static python compile (String input,LayoutController controller)
 			throws Exception {
-	// Compile a C source program to SVM code.
+	// Compile a C source program to python code.
 		CLexer lexer = new CLexer(
-				CharStreams.fromFileName(filename));
+				CharStreams.fromString(input));
 		CommonTokenStream tokens = 
 		   new CommonTokenStream(lexer);
 		ParseTree ast =
-		    syntacticAnalyse(tokens);
-		contextualAnalyse(ast,tokens);
-		python objprog = codeGenerate(ast);
+		    syntacticAnalyse(tokens,controller);
+		contextualAnalyse(ast,tokens,controller);
+		python objprog = codeGenerate(ast,controller);
 		return objprog;
 	}
 
 	private static ParseTree syntacticAnalyse
-			(CommonTokenStream tokens)
+			(CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
 	// Perform syntactic analysis of a C source program.
 		out.println();
@@ -56,12 +55,14 @@ public class CRun {
 	        ParseTree tree = parser.externalDeclaration();
 		int errors = parser.getNumberOfSyntaxErrors();
 		out.println(errors + " syntactic errors");
-		if (errors > 0)
+		if (errors > 0) {
+			controller.syntaxError();
 			throw new CException();
+		}
 		return tree;
 	}
 
-    private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens)
+    private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
 	// Perform contextual analysis of a C program, 
 		out.println("Contextual analysis ...");
@@ -71,23 +72,23 @@ public class CRun {
 		int errors = checker.getNumberOfContextualErrors();
 		out.println(errors + " scope/type errors");
 		out.println();
-		if (errors > 0)
+		if (errors > 0) {
+			controller.contextualError();
 			throw new CException();
+		}
 	}
 
-	private static python codeGenerate (ParseTree tree)
+	private static python codeGenerate (ParseTree tree,LayoutController controller)
 			throws Exception  {
-		out.println("Code generation ...");
 		CEncoderVisitor encoder =
 		   new CEncoderVisitor();
 		encoder.visit(tree);
 		python objectprog = encoder.getPython();
-		out.println("Object code:");
-		out.println(objectprog.showCode());
+		String output = objectprog.showCode();
+		controller.setCode(output);
 		return objectprog;
 	}
 
 	private static class CException extends Exception {
 	}
-
 }
