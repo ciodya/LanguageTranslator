@@ -45,6 +45,5 @@ public class pythonParse {
 		return tree;
 	}
 	private static class pythonException extends Exception {
-		private static final long serialVersionUID = 1L;
 	}
 }

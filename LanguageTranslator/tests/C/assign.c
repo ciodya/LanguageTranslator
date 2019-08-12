@@ -4,8 +4,7 @@ int fac(int n){
 }
 
 void main(){
-	int g = 7;
-	int e;
+	int g,e;
 	e = 3;
 	g = g+1;
 	g = 1+2*g,e = e/3-4;

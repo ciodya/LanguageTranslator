@@ -13,9 +13,12 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
+import C.CParser.ArithExpression_suffixContext;
 import python.pythonParser.ComparisonContext;
+import python.pythonParser.Comparison_suffixContext;
 import python.pythonParser.Compound_stmtContext;
 import python.pythonParser.ExprContext;
+import python.pythonParser.Expr_suffixContext;
 import python.pythonParser.FalseContext;
 import python.pythonParser.FunccallContext;
 import python.pythonParser.FuncdefContext;
@@ -108,17 +111,17 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 			    	Pattern pattern = Pattern.compile("[0-9]*");  
 			    	if(pattern.matcher(temp).matches())	//integer
 			    		typespecifier = "int ";
-			    	else if(temp.trim().equals("True")) {	//True
+			    	else if(temp.equals("True")) {	//True
 			    		typespecifier = "_Bool ";
 			    		temp = "1";
 			    	}
-			    	else if(temp.trim().equals("False")) {	//False
+			    	else if(temp.equals("False")) {	//False
 			    		typespecifier = "_Bool ";
 			    		temp = "0";
 			    	}
-			    	else if(temp.trim().contains("\""))	//string
+			    	else if(temp.contains("\""))	//string
 			    		typespecifier = "char";	
-			    	else if(temp.trim().contains("not")) {
+			    	else if(temp.contains("not")) {
 			    		typespecifier = "_Bool ";
 			    		flag = true;
 			    	}
@@ -172,19 +175,31 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 	@Override
 	public Void visitComparison(ComparisonContext ctx) {
 		visit(ctx.e1);
-		if(ctx.op != null)
-			obj.addCode(ctx.op.getText());
-		if(ctx.e2 != null)
-			visit(ctx.e2);
+		if(ctx.comparison_suffix() != null) {
+			for(Comparison_suffixContext e : ctx.comparison_suffix())
+				visit(e);
+		};
 		return null;
 	}
 	@Override
 	public Void visitExpr(ExprContext ctx) {
 		visit(ctx.e1);
-		if(ctx.op != null)
-			obj.addCode(ctx.op.getText());
-		if(ctx.e2 != null)
-			visit(ctx.e2);
+		if(ctx.expr_suffix() != null) {
+			for(Expr_suffixContext e : ctx.expr_suffix())
+				visit(e);
+		};
+		return null;
+	}
+	@Override
+	public Void visitComparison_suffix(Comparison_suffixContext ctx) {
+		obj.addCode(ctx.op.getText());
+		visit(ctx.e2);
+		return null;
+	}
+	@Override
+	public Void visitExpr_suffix(Expr_suffixContext ctx) {
+		obj.addCode(ctx.op.getText());
+		visit(ctx.e2);
 		return null;
 	}
 	@Override
@@ -199,6 +214,7 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 	}
 	@Override
 	public Void visitString(StringContext ctx) {
+		System.out.print(ctx.getText());
 		obj.addCode(ctx.getText());
 		return null;
 	}
@@ -307,6 +323,7 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 		visit(ctx.suite());
 		infunc--;
 		local_var_list.clear();
+		obj.addCode("\n");
 		return null;
 	}
 	@Override

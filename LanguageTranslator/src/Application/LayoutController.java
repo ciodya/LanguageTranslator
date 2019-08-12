@@ -54,9 +54,9 @@ public class LayoutController extends BorderPane{
 				+ "Please check the type of chosen source language.");
 	}
 	//Warning of contextual errors
-	public void contextualError() {
+	public void contextualError(String errors) {
 		text2.setText(null);
-		text2.setText("There are contextual errors with the input!");
+		text2.setText("There are contextual errors with the input!\n" + errors);
 	}
 	//Actions
 	//Layout initialization

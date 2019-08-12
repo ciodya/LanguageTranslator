@@ -136,18 +136,26 @@ test
 
 comparison
 	:
-	e1= expr (op= ('<' |'>'	|'=='|'>='|'<='|'!=') e2= expr )*
+	e1= expr (comparison_suffix)*
+	;
+
+comparison_suffix
+	: op= ('<' |'>'	|'=='|'>='|'<='|'!=') e2= expr
 	;
 	
 expr
 	: 
-	e1= atom  (op= ('*'|'/'|'%'|'+'|'-') e2= atom )*
+	e1= atom  (expr_suffix)*
+	;
+	
+expr_suffix
+	: op= ('*'|'/'|'%'|'+'|'-') e2= atom 
 	;
 
 atom
 	: (NAME)													#id 
     | (NUMBER) 													#num
-    | ('"'(NAME | NUMBER | COMMA | DOT | SPACES)*'"')			#string
+    | ('"'(NAME | NUMBER | PUNC | SPACES)*'"')					#string
     | (TRUE) 													#true
     | (FALSE)													#false
     | (NAME '(' ( test (COMMA test )* )? ')')					#funccall
@@ -220,6 +228,9 @@ COMMA : ',';
 COLON : ':';
 DOT   : '.';
 SEMI_COLON : ';';
+EXCLA  : '!';
+QUES : '?';
+BACKSLASH : '\\';
 
 OPEN_PAREN : '(' {opened++;};
 CLOSE_PAREN : ')' {opened--;};
@@ -227,6 +238,25 @@ OPEN_BRACK : '[' {opened++;};
 CLOSE_BRACK : ']' {opened--;};
 OPEN_BRACE : '{' {opened++;};
 CLOSE_BRACE : '}' {opened--;};
+
+PUNC
+: ADD
+| MINUS
+| STAR
+| DIV
+| LESS_THAN
+| GREATER_THAN
+| EQUALS
+| NOT_EQ_2
+| EXCLA
+| QUES
+| ASSIGN
+| COMMA
+| COLON
+| DOT
+| SEMI_COLON
+| BACKSLASH
+;
 
 SKIP_
  : ( SPACES | COMMENT | LINE_JOINING ) -> skip

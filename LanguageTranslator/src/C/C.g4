@@ -126,6 +126,9 @@ Semi : ';';
 Comma : ',';
 Double_quo : '"';
 Dot : '.';
+EXCLA  : '!';
+QUES : '?';
+BACKSLASH : '\\';
 
 
 Identifier
@@ -155,6 +158,9 @@ Punc
 	|	RightParen
 	|	LeftBrace
 	|	RightBrace
+	|	EXCLA
+	|	QUES
+	|	BACKSLASH
 	;
 	
 Oprator

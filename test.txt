@@ -1,0 +1,82 @@
+//C to Pythton
+_Bool verbose = 0;
+int f = 0;
+int fac (int n){  
+	int f = 1;
+	while( n > 1){
+		f = f*n ;
+		n = n-1 ;
+	}
+	if( f == 1)
+		f = 2;
+	else
+		f = 3;
+	return f ;
+}
+
+int test (int a, int b){
+	int c = a+b;
+	return c;
+}
+
+void main(){
+	int g,e;
+	e = 3;
+	g = g+1;
+	g = 1+2*g,e = e/3-4;
+	g = (1+2)*g;
+	char c = 'c';
+	char a[50] = "Hello,World.  a+b=c.", b[20] = "(hello).**";
+	_Bool d = (g>(e+3*6));
+	e = g+fac(e);
+	int num ;
+	scanf(num);
+	while (num != 0){
+		if (verbose) printf(num);
+		printf(fac(num) + 1);
+		printf(test(num,2));
+		scanf(num);
+	}
+}
+
+#Python to C
+g,p,k = 7,6,True
+c = (1+2)*g
+c = g+p*3-2
+d = not (g==p)
+f = "int change to string"
+
+a = 8
+b = a-2
+if a > 5:
+    print(a)
+elif a < 3:
+   a = a + 1
+   print(a)
+else:
+    b = b + 1
+    print(b)
+
+verbose = False
+def fac(n):
+    f = 1
+    while not n > 1:
+        f = f*n
+        n = n-1
+    return f
+
+def test (a, b):
+    c = a+b
+    return c
+
+total = 0
+def add (inc):
+    total = total + inc
+
+add(g)
+num = input()
+while num != 0:
+	if verbose:
+		print(num)
+	print(fac(num))
+	num = input()

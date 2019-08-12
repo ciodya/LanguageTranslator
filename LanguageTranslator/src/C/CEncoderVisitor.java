@@ -104,6 +104,7 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	    }
 	    if(!funcname.equals("main")) 
 	    	infunc--;
+	    obj.addCode("\n");
 		return null;
 	}
 	@Override
@@ -138,6 +139,7 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	    obj.addCode("\n");
 	    if(!funcname.equals("main")) 
 	    	infunc--;
+	    obj.addCode("\n");
 		return null;
 	}
 	@Override

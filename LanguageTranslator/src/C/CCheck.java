@@ -66,7 +66,6 @@ public class CCheck {
 			throw new CException();
 	}
 	private static class CException extends Exception {
-		private static final long serialVersionUID = 1L;
 	}
 
 }

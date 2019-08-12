@@ -43,9 +43,14 @@ import C.Type;
 public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements CVisitor<Type> {
 	private int errorCount = 0;
 	private CommonTokenStream tokens;
-	private ArrayList<String> errorMessages = new ArrayList<String>();
+	private String errors = null;
+	//Constructor
 	public CCheckerVisitor(CommonTokenStream toks) {
 	    tokens = toks;
+	}
+	//show contextual errors to window
+	public String showErrors(){
+		return errors;
 	}
 	//Report positions of errors
 	private void reportError (String message,
@@ -57,9 +62,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    int startCol = start.getCharPositionInLine();
 	    int finishLine = finish.getLine();
 	    int finishCol = finish.getCharPositionInLine();
-	    errorMessages.add(startLine + ":" + startCol + "-" +
-                               finishLine + ":" + finishCol
-		   + " " + message+"\n");
+	    errors += startLine + ":" + startCol + "-" +
+              finishLine + ":" + finishCol
+              + " " + message+"\n";
 		errorCount++;
 	}
 	//return the number of contextual errors
@@ -215,7 +220,7 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	
 		if(ctx.id1 != null)
 			define(ctx.id1.getText(), t, ctx);
-		else
+		if(ctx.id2 != null)
 			define(ctx.id2.getText(), t, ctx);
 		if(ctx.id3 != null)
 			define(ctx.id3.getText(), t, ctx);

@@ -71,7 +71,7 @@ public class pythonRun {
 		out.println(errors + " scope/type errors");
 		out.println();
 		if (errors > 0) {
-			controller.contextualError();
+			controller.contextualError(checker.showErrors()+ errors + " scope/type errors.\n");
 			throw new pythonException();
 		}
 	}
@@ -87,6 +87,5 @@ public class pythonRun {
 		return objectprog;
 	}
 	private static class pythonException extends Exception {
-		private static final long serialVersionUID = 1L;
 	}
 }

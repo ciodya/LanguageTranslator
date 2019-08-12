@@ -47,6 +47,5 @@ public class CParse {
 		return tree;
 	}
 	private static class CException extends Exception {
-		private static final long serialVersionUID = 1L;
 	}
 }

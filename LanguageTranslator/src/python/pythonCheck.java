@@ -65,6 +65,5 @@ public class pythonCheck {
 			throw new pythonException();
 	}
 	private static class pythonException extends Exception {
-		private static final long serialVersionUID = 1L;
 	}
 }

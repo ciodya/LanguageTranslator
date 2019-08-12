@@ -10,6 +10,9 @@ package python;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
+import C.CParser.ArithExpression_suffixContext;
+
 import org.antlr.v4.runtime.misc.*;
 
 import java.util.ArrayList;
@@ -17,8 +20,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import python.pythonParser.ComparisonContext;
+import python.pythonParser.Comparison_suffixContext;
 import python.pythonParser.Compound_stmtContext;
 import python.pythonParser.ExprContext;
+import python.pythonParser.Expr_suffixContext;
 import python.pythonParser.FalseContext;
 import python.pythonParser.FunccallContext;
 import python.pythonParser.FuncdefContext;
@@ -41,11 +46,17 @@ import python.pythonParser.While_stmtContext;
 
 public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> implements pythonVisitor<Type> {
 	private int errorCount = 0;
+	private String errors = null;
 	private CommonTokenStream tokens;
+	private boolean local = false;
 	// Constructor
 	public pythonCheckerVisitor(CommonTokenStream toks) {
 	    tokens = toks;
 	}
+	//show contextual errors to window
+		public String showErrors(){
+			return errors;
+		}
 	//Report positions of errors
 	private void reportError (String message,
 	                          ParserRuleContext ctx) {
@@ -56,9 +67,9 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	    int startCol = start.getCharPositionInLine();
 	    int finishLine = finish.getLine();
 	    int finishCol = finish.getCharPositionInLine();
-	    System.err.println(startLine + ":" + startCol + "-" +
+	    errors += startLine + ":" + startCol + "-" +
                                finishLine + ":" + finishCol
-		   + " " + message);
+		   + " " + message +"\n";
 		errorCount++;
 	}
 	//return the number of contextual errors
@@ -173,6 +184,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 					v_name = var_list.get(i);
 					v_value = value_list.get(i);
 					Pattern pattern = Pattern.compile("[0-9]*");  
+					//assign a variable to another variable
 					if(!pattern.matcher(v_value.getText()).matches()
 							&& !v_value.getText().equals("True")
 							&& !v_value.getText().equals("False")
@@ -189,13 +201,22 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 							&& !v_value.getText().contains("<=")
 							&& !v_value.getText().contains(">=")
 							)
+						//check whether the variable at the right of "=" has been defined
 						retrieve(v_value.getText(), ctx);
 					t = visit(v_value);
-					Type type = typeTable.get(v_name.getText());
+					Type type;
+					//This is a local variable, check if it has been defined locally
+					if(local ==true)
+						type = typeTable.getLocal(v_name.getText());
+					//This is a global variable, check if it has been defined globally
+					else
+						type = typeTable.getGlobal(v_name.getText());
+					//The variable has not been defined
 					if(type == null) {
 						define(v_name.getText(), t, ctx);
 						System.out.println(t.toString() + " variable " + v_name.getText() + " is DEFINED.");
 					}
+					//The variable has been defined, python allows it to be redefined
 					else if(type != t){
 						remove(v_name.getText(), type, ctx);
 						System.out.println(type.toString() + " variable " + v_name.getText() + " is REMOVED.");
@@ -243,27 +264,45 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	public Type visitComparison(ComparisonContext ctx) {				
 		Type t1;
 		t1 = visit(ctx.e1);
-	    if (ctx.e2 != null) {
-			Type t2 = visit(ctx.e2);
-			return checkBinary(COMPTYPE, t1, t2, ctx);
-	    }
-	    else {
-	    	return t1;
-	    }
+		Type t2;
+		if(ctx.comparison_suffix() != null) {
+			for(Comparison_suffixContext e : ctx.comparison_suffix()) {
+				t2 = visit(e);
+				t1 = checkBinary(COMPTYPE, t1, t2, ctx);
+			}
+			return t1;
+		}
+		else {
+		    	return t1;
+		    }
 	}
 	//visitor for expr
 	@Override
 	public Type visitExpr(ExprContext ctx) {							
 		System.out.print("enter expr\n");
 		Type t1;
+		Type t2;
 		t1 = visit(ctx.e1);
-	    if (ctx.e2 != null) {
-			Type t2 = visit(ctx.e2);
-			return checkBinary(ARITHTYPE, t1, t2, ctx);
-	    }
-	    else {
-	    	return t1;
-	    }
+		if(ctx.expr_suffix() != null) {
+			for(Expr_suffixContext e : ctx.expr_suffix()) {
+				t2 = visit(e);
+				t1 = checkBinary(ARITHTYPE, t1, t2, ctx);
+			}
+			return t1;
+		}
+		else {
+		    	return t1;
+		    }
+	}
+	//visitor for comparison_suffix
+	@Override
+	public Type visitComparison_suffix(Comparison_suffixContext ctx) {
+		return visit(ctx.e2);
+	}
+	//visitor for expr_suffix
+	@Override
+	public Type visitExpr_suffix(Expr_suffixContext ctx) {
+		return visit(ctx.e2);
 	}
 	//visitor for num
 	@Override
@@ -439,7 +478,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	public Type visitFuncdef(FuncdefContext ctx) {						
 		System.out.println("get into function definition");
 		typeTable.enterLocalScope();	
-		
+		local = true;
 		ParameterlistContext pl = ctx.parameterlist();//parameter list
 		Type seqtype;
 		if(pl != null) {
@@ -452,7 +491,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 		Type functype = new Type.Mapping(seqtype, rettype);//function type
 	    define(ctx.NAME().getText(), functype, ctx);	// put function type  into type table
 		typeTable.exitLocalScope();
-		
+		local = false;
 		define(ctx.NAME().getText(), functype, ctx);
 		System.out.println("Function " + ctx.NAME().getText() + " is defined, type: " +  functype);
 		return null;

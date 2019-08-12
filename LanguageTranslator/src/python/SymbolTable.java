@@ -51,6 +51,13 @@ public class SymbolTable<A> {
 			else
 				return null;
 		}
+		//Retrieve the attribute of specified local id
+		public A getGlobal (String id) {
+			if (locals == null)
+				return globals.get(id);
+			else
+				return null;
+		}
 		//Enter local part
 		public void enterLocalScope () {
 			locals = new HashMap<String,A>();
