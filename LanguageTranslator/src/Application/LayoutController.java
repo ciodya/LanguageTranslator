@@ -1,3 +1,11 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Controller for Layout.fxml file
+*/
+
 package Application;
 
 import javafx.collections.FXCollections;
@@ -13,13 +21,11 @@ import C.CRun;
 import python.pythonRun;
 
 public class LayoutController extends BorderPane{
-	
-	ObservableList<String> box_content = FXCollections
+	//Variables
+	private ObservableList<String> box_content = FXCollections
 			.observableArrayList("C","Python");
-	String[] input;
-	
-	//Language Choose 
-	
+	//Graphics
+	//Language Chooser and buttons
 	@FXML
 	private Button button;
 	@FXML
@@ -30,51 +36,58 @@ public class LayoutController extends BorderPane{
 	private ComboBox<String> box1;
 	@FXML
 	private ComboBox<String> box2;
-	
-	//Text Field
-	
+	//Text areas for input/output
 	@FXML
 	private TextArea text1;
 	@FXML
 	private TextArea text2;
-	
 	//Methods
+	//Output result  code
 	public void setCode(String output) {
 		text2.setText(null);
 		text2.setText(output);
 	}
+	//Warning of syntactic errors
 	public void syntaxError() {
 		text2.setText(null);
 		text2.setText("There are systax errors with the input! \n "
-				+ "Please check whether the source language you selected is right.");
+				+ "Please check the type of chosen source language.");
 	}
+	//Warning of contextual errors
 	public void contextualError() {
 		text2.setText(null);
 		text2.setText("There are contextual errors with the input!");
 	}
-	//Action
-	
+	//Actions
+	//Layout initialization
 	@FXML
 	private void initialize() {
 	box1.setValue("C");
 	box2.setValue("Python");
 	box1.setItems(box_content);
 	box2.setItems(box_content);
+	text1.setFocusTraversable(false);
+	text1.setPromptText("Please enter code here");
 	}
+	//Click Translate button
 	@FXML
 	private void goButton() {
-		if(box1.getValue().equals("C")) {
-			CRun.main(text1.getText(),this);
-		}
-		else if(box1.getValue().equals("Python")) {
-			pythonRun.main(text1.getText(),this);
+		if(text1.getText() != null && !(text1.getText().equals(""))) {
+			if(box1.getValue().equals("C")) {
+				CRun.main(text1.getText(),this);
+			}
+			else if(box1.getValue().equals("Python")) {
+				pythonRun.main(text1.getText(),this);
+			}
 		}
 	}
+	//Click clear button
 	@FXML
 	private void goClear() {
 		text1.setText(null);
 		text2.setText(null);
 	}
+	//Left combo box
 	@FXML
 	private void box1() {
 		if(box1.getValue().equals("C")) {
@@ -84,6 +97,7 @@ public class LayoutController extends BorderPane{
 			box2.setValue("C");
 		}
 	}
+	//Right combo box
 	@FXML
 	private void box2() {
 		if(box2.getValue().equals("C")) {
@@ -93,6 +107,7 @@ public class LayoutController extends BorderPane{
 			box1.setValue("C");
 		}
 	}
+	//Click arrow image
 	@FXML
 	private void arrowClick() {
 		String left = box1.getValue();

@@ -1,4 +1,10 @@
-// Driver for the python syntactic analyser.
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Driver for the python syntactic analyser.
+*/
 
 package python;
 
@@ -6,10 +12,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 
-import python.*;
-
 public class pythonParse {
-	private static boolean tracing = false;
 	private static PrintStream out = System.out;
 	public static void main(String[] args) {
 		try {
@@ -23,6 +26,7 @@ public class pythonParse {
 			x.printStackTrace(out);
 		}
 	}
+	// Perform syntactic analysis of a Python source program.
 	private static ParseTree syntacticAnalyse
 			(String filename)
 			throws Exception {
@@ -41,5 +45,6 @@ public class pythonParse {
 		return tree;
 	}
 	private static class pythonException extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 }

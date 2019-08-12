@@ -1,3 +1,11 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * A visitor for code translation of C
+*/
+
 package C;
 
 import java.util.List;
@@ -6,6 +14,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 import C.CParser.ActualContext;
 import C.CParser.ArithExpressionContext;
+import C.CParser.ArithExpression_suffixContext;
 import C.CParser.Assn_stmtContext;
 import C.CParser.BlockItemListContext;
 import C.CParser.BoolContext;
@@ -15,6 +24,7 @@ import C.CParser.Char_valueContext;
 import C.CParser.Compound_stmtContext;
 import C.CParser.Expr_stmtContext;
 import C.CParser.ExpressionContext;
+import C.CParser.Expression_suffixContext;
 import C.CParser.ExternalDeclarationContext;
 import C.CParser.Func_callContext;
 import C.CParser.Func_stmtContext;
@@ -33,11 +43,11 @@ import C.CParser.Void_funcContext;
 import C.CParser.While_stmtContext;
 
 public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements CVisitor<Void>  {
+	private int infunc = 0;
 	private python obj = new python();
 	public python getPython() {
 	    return obj;
 	}
-	int infunc = 0;
 	@Override
 	public Void visitExternalDeclaration(ExternalDeclarationContext ctx) {
 		visitChildren(ctx);
@@ -47,9 +57,6 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitVar_del(Var_delContext ctx) {
 		for(int i = 0; i < infunc; i++)
 			obj.addCode("\t");
-		if(ctx.id1 != null) {
-			
-		}
 		if(ctx.id2 != null) {
 			String inst = "";
 			inst += ctx.id2.getText() + " = ";
@@ -141,21 +148,33 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	@Override
 	public Void visitExpression(ExpressionContext ctx) {
 		visit(ctx.e1);
-		if(ctx.op !=null)
-			obj.addCode(ctx.op.getText());
-		if(ctx.e2 != null)
-			visit(ctx.e2);
+		if(ctx.expression_suffix() != null) {
+			for(Expression_suffixContext e : ctx.expression_suffix())
+				visit(e);
+		};
 		return null;
 	}
 	@Override
 	public Void visitArithExpression(ArithExpressionContext ctx) {
 		visit(ctx.e1);
-		if(ctx.op !=null)
-			obj.addCode(ctx.op.getText());
-		if(ctx.e2 != null)
-			visit(ctx.e2);
+		if(ctx.arithExpression_suffix() != null) {
+			for(ArithExpression_suffixContext e : ctx.arithExpression_suffix())
+				visit(e);
+		};
 		return null;
 	}
+	@Override
+	public Void visitExpression_suffix(Expression_suffixContext ctx) {
+		obj.addCode(ctx.op.getText());
+		visit(ctx.e2);
+		return null;
+	}
+	@Override
+	public Void visitArithExpression_suffix(ArithExpression_suffixContext ctx) {
+		obj.addCode(ctx.op.getText());
+		visit(ctx.e2);
+		return null;
+	}	
 	@Override
 	public Void visitNum(NumContext ctx) {
 		obj.addCode(ctx.getText());
@@ -290,12 +309,14 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitAssn_stmt(Assn_stmtContext ctx) {
 		for(int i = 0; i < infunc; i++)
 			obj.addCode("\t");
-	    String id = ctx.Identifier().getText();
-	    obj.addCode(id + " = ");
-	    visit(ctx.expression());
-	    obj.addCode("\n");
-	
-		return null;
+		String id;
+		for(int i = 0; i < ctx.Identifier().size(); i++) {
+			id = ctx.Identifier(i).getText();
+			obj.addCode(id + " = ");
+		    visit(ctx.expression(i));
+		    obj.addCode("\n");
+		}
+	    return null;
 	}
 	@Override
 	public Void visitActual(ActualContext ctx) {
@@ -325,5 +346,4 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitParameter(ParameterContext ctx) {
 		return null;
 	}
-	
 }

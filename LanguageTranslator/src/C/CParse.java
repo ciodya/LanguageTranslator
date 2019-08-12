@@ -1,3 +1,11 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Driver for the C syntactic analyser.
+*/
+
 package C;
 
 import java.io.PrintStream;
@@ -7,15 +15,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class CParse {
-	private static boolean tracing = false;
-
 	private static PrintStream out = System.out;
-
 	public static void main(String[] args) {
-	// Compile a Fun source program to SVM code, 
-	// then interpret it if it compiles successfully.
-	// The source file name must be given as the 
-	// first program argument.
 		try {
 			if (args.length == 0)
 				throw new CException();
@@ -27,13 +28,10 @@ public class CParse {
 			x.printStackTrace(out);
 		}
 	}
-
+	// Perform syntactic analysis of a C source program.
 	private static ParseTree syntacticAnalyse
 			(String filename)
 			throws Exception {
-	// Perform syntactic analysis of a Fun source program.
-	// Print any error messages.
-	// Return a syntax tree representation of the Fun program.
 		out.println();
 		out.println("Syntactic analysis ...");
 		CLexer lexer = new CLexer(
@@ -48,9 +46,7 @@ public class CParse {
 			throw new CException();
 		return tree;
 	}
-
 	private static class CException extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
-
-
 }

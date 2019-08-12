@@ -1,3 +1,11 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * A visitor for code translation of Python
+*/
+
 package python;
 
 import java.util.ArrayList;
@@ -29,13 +37,13 @@ import python.pythonParser.TrueContext;
 import python.pythonParser.While_stmtContext;
 
 public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> implements pythonVisitor<Void>  {
+	private List<String> var_list = new ArrayList<>();
+	private List<String> local_var_list = new ArrayList<>();
+	private int infunc = 1;
 	private C obj = new C();
 	public C getC() {
 	    return obj;
 	}
-	int infunc = 1;
-	List<String> var_list = new ArrayList<>();
-	List<String> local_var_list = new ArrayList<>();
 	@Override
 	public Void visitInput(InputContext ctx) {
 		obj.addCode("void main(){ \n");

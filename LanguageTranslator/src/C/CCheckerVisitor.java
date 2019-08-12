@@ -1,4 +1,10 @@
-// A visitor for contextual analysis of C.
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * A visitor for contextual analysis of C.
+*/ 
 
 package C;
 
@@ -8,12 +14,14 @@ import org.antlr.v4.runtime.tree.*;
 import 	C.CParser;
 import C.CParser.ActualContext;
 import C.CParser.ArithExpressionContext;
+import C.CParser.ArithExpression_suffixContext;
 import C.CParser.Assn_stmtContext;
 import C.CParser.BlockItemListContext;
 import C.CParser.Char_arrayContext;
 import C.CParser.Char_valueContext;
 import C.CParser.Compound_stmtContext;
 import C.CParser.ExpressionContext;
+import C.CParser.Expression_suffixContext;
 import C.CParser.ExternalDeclarationContext;
 import C.CParser.Func_callContext;
 import C.CParser.Func_stmtContext;
@@ -33,17 +41,13 @@ import java.util.List;
 import C.Type;
 
 public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements CVisitor<Type> {
-
-	// Contextual errors
-
 	private int errorCount = 0;
-
 	private CommonTokenStream tokens;
-
+	private ArrayList<String> errorMessages = new ArrayList<String>();
 	public CCheckerVisitor(CommonTokenStream toks) {
 	    tokens = toks;
 	}
-
+	//Report positions of errors
 	private void reportError (String message,
 	                          ParserRuleContext ctx) {
 	    Interval interval = ctx.getSourceInterval();
@@ -53,37 +57,33 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    int startCol = start.getCharPositionInLine();
 	    int finishLine = finish.getLine();
 	    int finishCol = finish.getCharPositionInLine();
-	    System.err.println(startLine + ":" + startCol + "-" +
+	    errorMessages.add(startLine + ":" + startCol + "-" +
                                finishLine + ":" + finishCol
-		   + " " + message);
+		   + " " + message+"\n");
 		errorCount++;
 	}
-
+	//return the number of contextual errors
 	public int getNumberOfContextualErrors () {
 		return errorCount;
 	}
-
-	/*
-	Scope checking
-	 */
-	
+	//Scope checking
 	private SymbolTable<Type> typeTable =
 	   new SymbolTable<Type>();
-
+	//Define input/output methods
 	private void predefine () {
 		typeTable.put("scanf",
 		   new Type.Mapping(Type.SEQUENCE, Type.INT));
 		typeTable.put("printf",
 		   new Type.Mapping(Type.SEQUENCE,Type.EMPTY));
 	}
-
+	//Define a variable/function
 	private void define (String id, Type type,
 	                     ParserRuleContext decl) {
 		boolean ok = typeTable.put(id, type);
 		if (!ok)
 			reportError(id + " is redeclared", decl);
 	}
-
+	//Retrieve the type of a variable/function
 	private Type retrieve (String id, ParserRuleContext occ) {
 		Type type = typeTable.get(id);
 		if (type == null) {
@@ -92,17 +92,13 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		} else
 			return type;
 	}
-	
-	/*
-	 Type checking
-	 */
-	
+	// Type checking
 	private static final Type.Mapping
 	   COMPTYPE = new Type.Mapping(
 	      new Type.Pair(Type.INT, Type.INT), Type._BOOL),
 	   ARITHTYPE = new Type.Mapping(
 	      new Type.Pair(Type.INT, Type.INT), Type.INT);
-
+	//Check the expected type and actual type of a variable
 	private void checkType (Type typeExpected,
 	                        Type typeActual,
 	                        ParserRuleContext construct) {
@@ -111,7 +107,7 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 			   + ", should be " + typeExpected,
 			   construct);
 	}
-
+	//Check the type of a function
 	private Type checkCall (String id, Type typeArg,
 	                        ParserRuleContext call) {
 		Type typeFunc = retrieve(id, call);
@@ -125,10 +121,10 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 			return mapping.range;
 		}
 	}
-	
+	//Check type of binary operations
 	private Type checkBinary (Type.Mapping typeOp,
 	                          Type typeArg1, Type typeArg2,
-	                          ParserRuleContext op) { //check binary operator
+	                          ParserRuleContext op) { 
 		if (! (typeOp.domain instanceof Type.Pair))
 			reportError(
 			   "binary operator should have 2 operands",
@@ -141,10 +137,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		}
 		return typeOp.range;
 	}
-
-///////////////////////////////////////////////////////////////////////////////////
-	
-	public Type visitWhile_stmt(CParser.While_stmtContext ctx) {			//while-stmt
+	//visitor for while-stmt
+	@Override
+	public Type visitWhile_stmt(CParser.While_stmtContext ctx) {			
 		System.out.println("get into WHILE loop");
 	    Type t = visit(ctx.expression());
 	    if(t == Type.INT)
@@ -154,8 +149,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    System.out.println("exit WHILE loop");
 	    return null;
 	}
-	
-	public Type visitIf_stmt(CParser.If_stmtContext ctx) {					//if-stmt
+	//visitor for if-stmt
+	@Override
+	public Type visitIf_stmt(CParser.If_stmtContext ctx) {				
 		System.out.println("get into IF-ELSE");
 	    Type t = visit(ctx.e1);
 	    if(t == Type.INT)
@@ -167,29 +163,35 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    System.out.println("exit IF-ELSE");
 	    return null;
 	}
-
-	public Type visitExpr_stmt(CParser.Expr_stmtContext ctx) {				//expr-stmt
+	//visitor for expr-stmt
+	@Override
+	public Type visitExpr_stmt(CParser.Expr_stmtContext ctx) {				
 		visitChildren(ctx);
 	    return null;
 	}
-	
-	public Type visitVoid(CParser.VoidContext ctx) {						//Void
+	//visitor for 'void'
+	@Override
+	public Type visitVoid(CParser.VoidContext ctx) {						
 		return Type.VOID;
 	}
-		
-	public Type visitChar(CParser.CharContext ctx) {						//Char
+	//visitor for 'char'
+	@Override
+	public Type visitChar(CParser.CharContext ctx) {						
 		return Type.CHAR;
 	}
-	
-	public Type visitInt(CParser.IntContext ctx) {							//Int
+	//visitor for 'int'
+	@Override
+	public Type visitInt(CParser.IntContext ctx) {							
 		return Type.INT;
 	}
-	
-	public Type visitBool(CParser.BoolContext ctx) {						//_Bool
+	//visitor for '_Bool'
+	@Override
+	public Type visitBool(CParser.BoolContext ctx) {						
 		return Type._BOOL;
 	}
-	
-	public Type visitVar_del(CParser.Var_delContext ctx) {					//Var_del
+	//visitor for Var_del
+	@Override
+	public Type visitVar_del(CParser.Var_delContext ctx) {					
 		Type t = visit(ctx.typeSpecifier());
 		Type t1;
 		Type t2;
@@ -221,8 +223,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 			define(ctx.id4.getText(), t, ctx);
 		return null;		
 	}
-	
-	public Type visitVoid_func(CParser.Void_funcContext ctx) {				//Void_func
+	//visitor for Void_func
+	@Override
+	public Type visitVoid_func(CParser.Void_funcContext ctx) {				
 		typeTable.enterLocalScope();
 		
 		Type t = visit(ctx.c1);		// expected return type
@@ -249,8 +252,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		System.out.println("void function " + ctx.id1.getText() + " is DEFINED.");
 		return null;
 	}
-	
-	public Type visitNotvoid_func(CParser.Notvoid_funcContext ctx) {		//Notvoid_func
+	//visitor for Notvoid_func
+	@Override
+	public Type visitNotvoid_func(CParser.Notvoid_funcContext ctx) {	
 		typeTable.enterLocalScope();
 		
 		Type t = visit(ctx.c2);		// expected return type
@@ -283,28 +287,28 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		return null;
 		
 	}
-
+	//visitor for externalDeclaration
 	@Override
-	public Type visitExternalDeclaration(ExternalDeclarationContext ctx) {	//externalDeclaration
+	public Type visitExternalDeclaration(ExternalDeclarationContext ctx) {	
 		predefine();
 		visitChildren(ctx);
 	    return null;
 	}
-
+	//visitor forblockitmlist
 	@Override
-	public Type visitBlockItemList(BlockItemListContext ctx) {				//blockitmlist
+	public Type visitBlockItemList(BlockItemListContext ctx) {				
 		visitChildren(ctx);
 	    return null;
 	}
-
+	//visitor for compound_stmt
 	@Override
-	public Type visitCompound_stmt(Compound_stmtContext ctx) {				//compound_stmt
+	public Type visitCompound_stmt(Compound_stmtContext ctx) {				
 		visitChildren(ctx);
 	    return null;
 	}
-
+	//visitor for funccall
 	@Override
-	public Type visitFunccall(FunccallContext ctx) {						//funccall
+	public Type visitFunccall(FunccallContext ctx) {						
 		Type t;
 		Type t1;
 		if(ctx.actual() != null)
@@ -315,9 +319,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		System.out.println("Function " + ctx.Identifier().getText() + "is CALLED.");
 	    return t1;
 	}
-
+	//visitor for parameterlist
 	@Override
-	public Type visitParameterlist(ParameterlistContext ctx) {				//parameterlist
+	public Type visitParameterlist(ParameterlistContext ctx) {			
 		List<ParameterContext> para_del = ctx.parameter();
 		ArrayList<Type> array = new ArrayList<Type>();
 		Type t;
@@ -333,10 +337,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    
 	    return seqtype;
 	}
-
-
+	//visitor for actual
 	@Override
-	public Type visitActual(ActualContext ctx) {							//actual
+	public Type visitActual(ActualContext ctx) {							
 		List<ExpressionContext> exp = ctx.expression();
 		ArrayList<Type> array = new ArrayList<Type>();
 		Type t;
@@ -352,50 +355,68 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    
 	    return seqtype;
 	}
-
+	//visitor for Expression
 	@Override
-	public Type visitExpression(ExpressionContext ctx) {					//Expression
+	public Type visitExpression(ExpressionContext ctx) {					
 		Type t1;
+		Type t2 = null;
 		t1 = visit(ctx.e1);
-		    if (ctx.e2 != null) {
-				Type t2 = visit(ctx.e2);
-				return checkBinary(COMPTYPE, t1, t2, ctx);
-		    }
-		    else {
+		if(ctx.expression_suffix() != null) {
+			for(Expression_suffixContext e : ctx.expression_suffix()) {
+				t2 = visit(e);
+				t1 = checkBinary(COMPTYPE, t1, t2, ctx);
+			}
+			return t1;
+		}
+		else {
 		    	return t1;
 		    }
 	}
-
+	//visitor for arithExpression
 	@Override
-	public Type visitArithExpression(ArithExpressionContext ctx) {			//arithExpression
+	public Type visitArithExpression(ArithExpressionContext ctx) {			
 		Type t1;
+		Type t2 = null;
 		t1 = visit(ctx.e1);
-		    if (ctx.e2 != null) {
-				Type t2 = visit(ctx.e2);
-				return checkBinary(ARITHTYPE, t1, t2, ctx);
-		    }
-		    else {
+		if(ctx.arithExpression_suffix() != null) {
+			for(ArithExpression_suffixContext e : ctx.arithExpression_suffix()) {
+				t2 = visit(e);
+				t1 = checkBinary(ARITHTYPE, t1, t2, ctx);
+			}
+			return t1;
+		}
+		else {
 		    	return t1;
 		    }
 	}
-
+	//visitor for Expression_suffix
 	@Override
-	public Type visitNum(NumContext ctx) {									//num
+	public Type visitExpression_suffix(Expression_suffixContext ctx) {
+		return visit(ctx.e2);
+	}
+	//visitor for ArithExpression_suffix
+	@Override
+	public Type visitArithExpression_suffix(ArithExpression_suffixContext ctx) {
+		return visit(ctx.e2);
+	}
+	//visitor for num
+	@Override
+	public Type visitNum(NumContext ctx) {									
 		return Type.INT;
 	}
-
+	//visitor for id
 	@Override
-	public Type visitId(IdContext ctx) {									//id
+	public Type visitId(IdContext ctx) {									
 		return retrieve(ctx.Identifier().getText(), ctx);
 	}
-
+	//visitor for parens
 	@Override
-	public Type visitParens(ParensContext ctx) {							//parens
+	public Type visitParens(ParensContext ctx) {							
 		return visit(ctx.expression());
 	}
-
+	//visitor for func_call
 	@Override
-	public Type visitFunc_call(Func_callContext ctx) {						//func_call
+	public Type visitFunc_call(Func_callContext ctx) {						
 		Type t;
 		Type t1;
 		if(ctx.actual() != null)
@@ -406,37 +427,41 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		System.out.println("Function " + ctx.Identifier().getText() + "is CALLED.");
 	    return t1;
 	}
-
+	//visitor for parameter
 	@Override
-	public Type visitParameter(ParameterContext ctx) {						//parameter
+	public Type visitParameter(ParameterContext ctx) {						
 		CParser.TypeSpecifierContext tc = ctx.typeSpecifier();
 	    Type t;
 		t = visit(tc);
 		define(ctx.Identifier().getText(), t, ctx);	  
 	    return t;
 	}
-
+	//visitor for assign_stmt
 	@Override
-	public Type visitAssn_stmt(Assn_stmtContext ctx) {						//assgn_stmt
-		Type tvar = retrieve(ctx.Identifier().getText(), ctx);
-	    Type t = visit(ctx.expression());
-	    checkType(tvar, t, ctx);
+	public Type visitAssn_stmt(Assn_stmtContext ctx) {						
+		Type tvar;
+		Type t;
+		for(int i = 0; i < ctx.Identifier().size(); i++) {
+			tvar = retrieve(ctx.Identifier(i).getText(), ctx);
+			t = visit(ctx.expression(i));
+			checkType(tvar, t, ctx);
+		}
 	    return null;
 	}
-
+	//visitor for char_value
 	@Override
-	public Type visitChar_value(Char_valueContext ctx) {					//char_value
+	public Type visitChar_value(Char_valueContext ctx) {					
 		return Type.CHAR;
 	}
-
+	//visitor for func_stmt
 	@Override
-	public Type visitFunc_stmt(Func_stmtContext ctx) {						//Func_stmt
+	public Type visitFunc_stmt(Func_stmtContext ctx) {						
 		visit(ctx.funccall());
 		return null;
 	}
-
+	//visitor for Char_array
 	@Override
-	public Type visitChar_array(Char_arrayContext ctx) {					//Char_array
+	public Type visitChar_array(Char_arrayContext ctx) {					
 		return Type.CHAR;
 	}
 }

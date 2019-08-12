@@ -1,3 +1,11 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Driver for translating C source code to Python code
+*/
+
 package C;
 
 import java.io.PrintStream;
@@ -16,9 +24,8 @@ import Application.LayoutController;
 
 public class CRun {
 	private static boolean tracing = false;
-
 	private static PrintStream out = System.out;
-
+	//Constructor
 	public static void main(String input,LayoutController controller) {
 		try {
 			python objprog = compile(input,controller);
@@ -30,10 +37,9 @@ public class CRun {
 			x.printStackTrace(out);
 		}
 	}
-
+	// Compilation, include syntactic analysis, contextual analysis and code translation
 	private static python compile (String input,LayoutController controller)
 			throws Exception {
-	// Compile a C source program to python code.
 		CLexer lexer = new CLexer(
 				CharStreams.fromString(input));
 		CommonTokenStream tokens = 
@@ -41,14 +47,13 @@ public class CRun {
 		ParseTree ast =
 		    syntacticAnalyse(tokens,controller);
 		contextualAnalyse(ast,tokens,controller);
-		python objprog = codeGenerate(ast,controller);
+		python objprog = codeTranslate(ast,controller);
 		return objprog;
 	}
-
+	//Syntactic analysis for a C source program
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
-	// Perform syntactic analysis of a C source program.
 		out.println();
 		out.println("Syntactic analysis ...");
 		CParser parser = new CParser(tokens);
@@ -61,7 +66,7 @@ public class CRun {
 		}
 		return tree;
 	}
-
+	//Contextual analysis for a C source program
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
 	// Perform contextual analysis of a C program, 
@@ -77,8 +82,8 @@ public class CRun {
 			throw new CException();
 		}
 	}
-
-	private static python codeGenerate (ParseTree tree,LayoutController controller)
+    //Code translation, generating a equivalent Python program
+	private static python codeTranslate (ParseTree tree,LayoutController controller)
 			throws Exception  {
 		CEncoderVisitor encoder =
 		   new CEncoderVisitor();
@@ -88,7 +93,7 @@ public class CRun {
 		controller.setCode(output);
 		return objectprog;
 	}
-
 	private static class CException extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 }

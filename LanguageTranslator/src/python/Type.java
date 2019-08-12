@@ -1,43 +1,45 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Representation of types.
+*/
+
 package python;
 
 import java.util.ArrayList;
 
 public abstract class Type {
+	//Primitive type
 	public static final Primitive
 	   VOID = new Primitive(0),
 	   STRING  = new Primitive(1),
 	   INT  = new Primitive(2),
 	   BOOL = new Primitive(3);
-	
+	//Sequence type
 	public static final ArrayList<Type>
 		SEQUENCE = new ArrayList<Type>();
-	
 	public static final Error
 	   ERROR = new Error();
-
 	public static final Sequence
 	    EMPTY = new Sequence(new ArrayList<Type>());
-	
 	public static final Sequence_int
 		SEQUENCE_INT= new Sequence_int(new ArrayList<Type>());
  
 	public abstract boolean equiv (Type that);
-
 	public abstract String toString ();
-
+	//Primitive class for variable/function type
 	public static class Primitive extends Type {
 		public int which;
-
 		public Primitive (int w) {
 			which = w;
 		}
-
 		public boolean equiv (Type that) {
 			return (that instanceof Primitive
 			   && this.which ==
 			       ((Primitive)that).which);
 		}
-
 		public String toString () {
 			switch (which) {
 				case  0: return "void";
@@ -47,17 +49,14 @@ public abstract class Type {
 			}
 			return "???";
 		}
-
 	}
-	////////////////////////////////////////////////////////
+	//Pair type for binary operations
 	public static class Pair extends Type {
 		public Type first, second;
-
 		public Pair (Type fst, Type snd) {
 			first = fst;
 			second = snd;
 		}
-
 		public boolean equiv (Type that) {
 			if (that instanceof Pair) {
 				Pair thatPair = (Pair)that;
@@ -66,20 +65,17 @@ public abstract class Type {
 			} else
 				return false;
 		}
-
 		public String toString () {
 			return first + " x " + second;
 		}
-
 	}
- 	/////////////////////////////////////////////////////////
-	public static class Sequence extends Type { //an expression
+	//Sequence type
+	public static class Sequence extends Type {
 	public ArrayList<Type> sequence;
 
 	public Sequence(ArrayList<Type> seq) {
 	    sequence = seq;
 	}
-
 	public boolean equiv(Type that) { //check whether equivalent
 	    if (that instanceof Sequence) {
 		ArrayList<Type> thatSequence = ((Sequence)that).sequence;
@@ -93,7 +89,6 @@ public abstract class Type {
 	    else
 		return false;
 	}
-
 	public String toString() {
 	    String s = "[";
 	    if (sequence.size() > 0) {
@@ -105,15 +100,14 @@ public abstract class Type {
 	    return s;
 		}
 	}
-	////////////////////////////////////////////////////////
-	public static class Sequence_int extends Type { //an expression
+	//Sequence of integer
+	public static class Sequence_int extends Type { 
 		public ArrayList<Type> sequence;
 
 		public Sequence_int(ArrayList<Type> seq) {
 		    sequence = seq;
 		    sequence.add(INT);
 		}
-
 		public boolean equiv(Type that) { //check whether equivalent
 		    if (that instanceof Sequence) {
 			ArrayList<Type> thatSequence = ((Sequence)that).sequence;
@@ -127,7 +121,6 @@ public abstract class Type {
 		    else
 			return false;
 		}
-
 		public String toString() {
 		    String s = "[";
 		    if (sequence.size() > 0) {
@@ -139,21 +132,19 @@ public abstract class Type {
 		    return s;
 		}
 	 }
-	////////////////////////////////////////////////////////
-	public static class Mapping extends Type { //Type of a function
+	 //Mapping type for functions
+	public static class Mapping extends Type { 
 		public Type domain, range;
 		public ArrayList<Type> domain_seq;
 
-		public Mapping (Type d, Type r) {
+		public Mapping (Type d, Type r) {	//single parameter
 			domain = d;
 			range = r;
 		}
-		
-		public Mapping (ArrayList<Type> d, Type r) {
+		public Mapping (ArrayList<Type> d, Type r) {	//multiple parameters
 			domain_seq = d;
 			range = r;
 		}
-
 		public boolean equiv (Type that) {
 			if (that instanceof Mapping) {
 				Mapping thatMapping =
@@ -172,16 +163,13 @@ public abstract class Type {
 			} else
 				return false;
 		}
-
 		public String toString () {
 			if(this.domain != null)
 				return domain + " -> " + range;
 			else
 				return domain_seq + " -> " + range;
 		}
-
 	}
-	////////////////////////////////////////////////////////
 	public static class Error extends Type {
 		public Error () {
 		}

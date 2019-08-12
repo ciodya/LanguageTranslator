@@ -1,4 +1,10 @@
-// Driver for the python compiler and C interpreter.
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Driver for translating Python source code to C code
+*/
 
 package python;
 
@@ -12,6 +18,7 @@ import java.io.*;
 public class pythonRun {
 	private static boolean tracing = false;
 	private static PrintStream out = System.out;
+	//Constructor
 	public static void main(String input,LayoutController controller) {
 		try {
 			C objprog = compile(input,controller);
@@ -23,6 +30,7 @@ public class pythonRun {
 			x.printStackTrace(out);
 		}
 	}
+	// Compilation, include syntactic analysis, contextual analysis and code translation
 	private static C compile (String input,LayoutController controller)
 			throws Exception {
 		pythonLexer lexer = new pythonLexer(
@@ -35,6 +43,7 @@ public class pythonRun {
 		C objprog = codeGenerate(ast,controller);
 		return objprog;
 	}
+	//Syntactic analysis for a Python source program
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
@@ -50,6 +59,7 @@ public class pythonRun {
 			}
 		return tree;
 	}
+	//Contextual analysis for a Python source program
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens
     										,LayoutController controller)
 			throws Exception {
@@ -65,6 +75,7 @@ public class pythonRun {
 			throw new pythonException();
 		}
 	}
+  //Code translation, generating a equivalent C program
 	private static C codeGenerate (ParseTree tree,LayoutController controller)
 			throws Exception  {
 		pythonEncoderVisitor encoder =
@@ -76,5 +87,6 @@ public class pythonRun {
 		return objectprog;
 	}
 	private static class pythonException extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 }

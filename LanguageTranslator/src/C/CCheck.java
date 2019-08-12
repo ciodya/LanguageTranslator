@@ -1,4 +1,10 @@
-// Driver for the C typechecker
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Driver for C type checker
+*/
 
 package C;
 
@@ -8,16 +14,9 @@ import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 
 public class CCheck {
-
-	private static boolean tracing = false;
-
 	private static PrintStream out = System.out;
-
+	//Constructor
 	public static void main(String[] args) {
-	// Compile a C source program to SVM code, 
-	// then interpret it if it compiles successfully.
-	// The source file name must be given as the 
-	// first program argument.
 		try {
 			if (args.length == 0)
 				throw new CException();
@@ -28,7 +27,7 @@ public class CCheck {
 			x.printStackTrace(out);
 		}
 	}
-
+	//Do type checking for a C file, include syntactic analysis and contextual analysis
 	private static void check (String filename)
 			throws Exception {
 		CLexer lexer = new CLexer(
@@ -39,7 +38,7 @@ public class CCheck {
 		    syntacticAnalyse(tokens);
 		contextualAnalyse(tree,tokens);
 	}
-
+	//Syntactic analysis
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens)
 			throws Exception {
@@ -53,7 +52,7 @@ public class CCheck {
 			throw new CException();
 		return tree;
 	}
-
+	//Contextual analysis
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens)
 			throws Exception {
 		out.println("Contextual analysis ...");
@@ -66,8 +65,8 @@ public class CCheck {
 		if (errors > 0)
 			throw new CException();
 	}
-
 	private static class CException extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 
 }

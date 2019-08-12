@@ -1,6 +1,11 @@
-/* Python 3 Grammar
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
  * 
- * The grammar is based on the file of following Github:
+ * Python 3 Grammar
+ * 
+ *The grammar is based on the file of following Github:
  *https://github.com/antlr/grammars-v4/blob/master/python3/Python3.g4
  * 
  * All comments that start with "///" are copy-pasted from

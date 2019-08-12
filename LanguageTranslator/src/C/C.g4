@@ -1,5 +1,9 @@
 /*
- C 2011 grammar built from the C11 Spec 
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * C 2011 grammar built from the C11 Spec 
  * 
  * The grammar is based on the file of following Github:
  * https://github.com/antlr/grammars-v4/blob/master/c/C.g4
@@ -29,11 +33,10 @@ funccall
 	;
 	
 initDeclaratorList
-    :   typeSpecifier (id1= Identifier ('[' DigitSequence ']')?
+    :  ( typeSpecifier (id1= Identifier ('[' DigitSequence ']')?
     					| (id2= Identifier ('[' DigitSequence ']')? Assign c1= expression))
    		 (Comma (id3= Identifier ('[' DigitSequence ']')?
-   		 		| (id4= Identifier ('[' DigitSequence ']')? Assign c2= expression)))? Semi	
-   		 																						#var_del
+   		 		| (id4= Identifier ('[' DigitSequence ']')? Assign c2= expression)))? Semi)		#var_del
     ;
 functionDefinition
     :   (c1= typeSpecifier id1= Identifier LeftParen parameterlist? RightParen 
@@ -56,12 +59,20 @@ blockItemList
    
 //Expression	
 expression
-    :   e1= arithExpression (op= (Less | Greater | Equal | NotEqual) e2= arithExpression)*			
+    :   e1= arithExpression (expression_suffix)*			
     ;
+    
+expression_suffix
+	:	op= (Less | Greater | Equal | NotEqual) e2= arithExpression
+	;
 
 arithExpression
-    :   e1= castExpression (op= (Plus | Minus | Star | Div)  e2= castExpression)*
+    :   e1= castExpression (arithExpression_suffix)*
     ;
+    
+arithExpression_suffix
+	:	op= (Plus | Minus | Star | Div)  e2= castExpression
+	;
     
 castExpression
     :   DigitSequence																		#num						
@@ -79,7 +90,7 @@ statement
     |   (If LeftParen e1= expression RightParen c1=statement (Else c3=statement)?)			#if_stmt	
     |   (While LeftParen expression RightParen statement)      								#while_stmt
     |	(funccall Semi)																		#func_stmt
-    |	(Identifier Assign  expression	Semi)												#assn_stmt
+    |	(Identifier Assign  expression (Comma Identifier Assign  expression)* Semi)			#assn_stmt
     ;
     
 actual
@@ -158,7 +169,6 @@ Oprator
 	|	Div
 	;
 	
-
 fragment
 Nondigit
     :   [a-zA-Z_]

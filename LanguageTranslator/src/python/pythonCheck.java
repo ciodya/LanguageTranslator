@@ -1,4 +1,11 @@
-// Driver for the python typechecker
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * 
+ * Driver for Python type checker
+*/
+
 package python;
 
 import org.antlr.v4.runtime.*;
@@ -6,8 +13,8 @@ import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 
 public class pythonCheck {
-	private static boolean tracing = false;
 	private static PrintStream out = System.out;
+	//Constructor
 	public static void main(String[] args) {
 		try {
 			if (args.length == 0)
@@ -19,6 +26,7 @@ public class pythonCheck {
 			x.printStackTrace(out);
 		}
 	}
+	//Do type checking for a C file, include syntactic analysis and contextual analysis
 	private static void check (String filename)
 			throws Exception {
 		pythonLexer lexer = new pythonLexer(
@@ -29,6 +37,7 @@ public class pythonCheck {
 		    syntacticAnalyse(tokens);
 		contextualAnalyse(tree,tokens);
 	}
+	//Syntactic analysis
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens)
 			throws Exception {
@@ -42,6 +51,7 @@ public class pythonCheck {
 			throw new pythonException();
 		return tree;
 	}
+	//Contextual analysis
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens)
 			throws Exception {
 		out.println("Contextual analysis ...");
@@ -55,5 +65,6 @@ public class pythonCheck {
 			throw new pythonException();
 	}
 	private static class pythonException extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 }
