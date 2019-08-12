@@ -27,7 +27,7 @@ For detailed tests, more test files written in Python or C can be found in "Lang
 To work with the application, Eclipse and JavaFX plug-in are recommended to be first installed on the machine.
 The program can be directly run with Application.jar file.
 The GUI is as follows:
-![GUI](E:/GitHub/temp/Capture.PNG)
+![](/image/GUI.PNG)
  
 Users can choose source lanuguages and target languages with the combo boxes, and they can also click the double arrow image to swap them. The text areas for input/output programs are both scrollable, and users can maximize the window to have a better view of the texts as well.
 
