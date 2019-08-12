@@ -15,18 +15,20 @@ The source codes are written in Java using Eclipse. JavaFX, CSS and Scene Builde
 
 ## File Directory
 Main packages are placed in "LanguageTranslator/src" directory, and their functions are as follows:
-*Application: Driver of the application and GUI design
-*C: Controller to ranslate C source programs to Python programs
-*Python : Controller to ranslate Python  source programs to C programs
-*tests: test files for both directions of translation
+* Application: Driver of the application and GUI design
+* C: Controller to ranslate C source programs to Python programs
+* Python : Controller to ranslate Python  source programs to C programs
+* tests: test files for both directions of translation
 
 For quick function testing, there is a test.txt file containing a C source program and a Python source program, which include their respective main grammars.
+
 For detailed tests, more test files written in Python or C can be found in "LanguageTranslator/tests" directory. 
 
 ## User Guide
 To work with the application, Eclipse and JavaFX plug-in are recommended to be first installed on the machine.
 The program can be directly run with Application.jar file.
 The GUI is as follows:
+
 ![](/image/GUI.PNG)
  
 Users can choose source lanuguages and target languages with the combo boxes, and they can also click the double arrow image to swap them. The text areas for input/output programs are both scrollable, and users can maximize the window to have a better view of the texts as well.
