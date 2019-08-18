@@ -43,7 +43,7 @@ import C.Type;
 public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements CVisitor<Type> {
 	private int errorCount = 0;
 	private CommonTokenStream tokens;
-	private String errors = null;
+	private String errors;
 	//Constructor
 	public CCheckerVisitor(CommonTokenStream toks) {
 	    tokens = toks;
@@ -65,6 +65,9 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    errors += startLine + ":" + startCol + "-" +
               finishLine + ":" + finishCol
               + " " + message+"\n";
+	    System.err.print(startLine + ":" + startCol + "-" +
+	              finishLine + ":" + finishCol
+	              + " " + message+"\n");
 		errorCount++;
 	}
 	//return the number of contextual errors
@@ -145,19 +148,16 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	//visitor for while-stmt
 	@Override
 	public Type visitWhile_stmt(CParser.While_stmtContext ctx) {			
-		System.out.println("get into WHILE loop");
 	    Type t = visit(ctx.expression());
 	    if(t == Type.INT)
 	    	t = Type._BOOL;
 	    visit(ctx.statement());
 	    checkType(Type._BOOL, t, ctx);
-	    System.out.println("exit WHILE loop");
 	    return null;
 	}
 	//visitor for if-stmt
 	@Override
 	public Type visitIf_stmt(CParser.If_stmtContext ctx) {				
-		System.out.println("get into IF-ELSE");
 	    Type t = visit(ctx.e1);
 	    if(t == Type.INT)
 	    	t = Type._BOOL;
@@ -165,7 +165,6 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    if (ctx.c3 != null)
 		visit(ctx.c3);
 	    checkType(Type._BOOL, t, ctx);
-	    System.out.println("exit IF-ELSE");
 	    return null;
 	}
 	//visitor for expr-stmt
@@ -254,7 +253,6 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    
 		typeTable.exitLocalScope();
 		define(ctx.id1.getText(), functype, ctx);
-		System.out.println("void function " + ctx.id1.getText() + " is DEFINED.");
 		return null;
 	}
 	//visitor for Notvoid_func
@@ -288,7 +286,6 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	    
 		typeTable.exitLocalScope();
 		define(ctx.id2.getText(), functype, ctx);
-		System.out.println("non-void function " + ctx.id2.getText() + "is DEFINED.");
 		return null;
 		
 	}
@@ -321,7 +318,6 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		else
 			t = Type.EMPTY;
 		t1 = checkCall(ctx.Identifier().getText(), t, ctx);
-		System.out.println("Function " + ctx.Identifier().getText() + "is CALLED.");
 	    return t1;
 	}
 	//visitor for parameterlist
@@ -429,7 +425,6 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		else
 			t = Type.EMPTY;
 		t1 = checkCall(ctx.Identifier().getText(), t, ctx);
-		System.out.println("Function " + ctx.Identifier().getText() + "is CALLED.");
 	    return t1;
 	}
 	//visitor for parameter

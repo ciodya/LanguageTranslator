@@ -1,0 +1,17 @@
+.background {
+	-fx-background-color : #fffffb;
+}
+
+.button_translate { 
+   -fx-background-color: #d71345; 
+   -fx-text-fill: white; 
+}
+
+.labelBackground {
+	-fx-background-color : #dedede;
+}
+
+.label_buttom {
+	-fx-font-family: "Times New Roman", Times, serif;
+	-fx-font-size: 12px;
+}

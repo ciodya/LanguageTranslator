@@ -3,17 +3,18 @@
 n = "a"
 def pos(n):
     return n
+def fac():
+	return "s"
 
 i = 3
 b = True
-i = i+1
 i = b
 i = b*2 #error
 b = i>0
 if b:
-    print(i)
+    i = pos(6)+1
 if 1:
-    print(i+1)
+    i = i+fac(i) #error
 if i:
     print(i)
 b = pos("1") #error

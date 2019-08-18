@@ -10,9 +10,6 @@ package python;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-
-import C.CParser.ArithExpression_suffixContext;
-
 import org.antlr.v4.runtime.misc.*;
 
 import java.util.ArrayList;
@@ -70,6 +67,9 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	    errors += startLine + ":" + startCol + "-" +
                                finishLine + ":" + finishCol
 		   + " " + message +"\n";
+	    System.err.print(startLine + ":" + startCol + "-" +
+	              finishLine + ":" + finishCol
+	              + " " + message+"\n");
 		errorCount++;
 	}
 	//return the number of contextual errors
@@ -82,10 +82,8 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	private void predefine () {
 		typeTable.put("input",
 		   new Type.Mapping(Type.EMPTY, Type.INT));
-		System.out.println( " input is DEFINED.");
 		typeTable.put("print",
 		   new Type.Mapping(Type.SEQUENCE_INT,Type.VOID));
-		System.out.println( " print is DEFINED." );
 	}
 	//Define input/output methods
 	private void define (String id, Type type,
@@ -165,7 +163,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	//visitor for small_stmt
 	@Override
 	public Type visitSmall_stmt(Small_stmtContext ctx) {					
-		System.out.println("get into small statement");
 		Type t;
 		TestlistContext var = ctx.e1;
 		TestlistContext value = ctx.e2;
@@ -175,7 +172,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 				visit(v);
 		}
 		else {
-			System.out.println("assign statement");
 			List<TestContext> value_list = value.test();
 			if(value_list.size() == var_list.size()) {
 				pythonParser.TestContext v_name;
@@ -279,7 +275,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	//visitor for expr
 	@Override
 	public Type visitExpr(ExprContext ctx) {							
-		System.out.print("enter expr\n");
 		Type t1;
 		Type t2;
 		t1 = visit(ctx.e1);
@@ -331,7 +326,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	//visitor for funccall
 	@Override
 	public python.Type visitFunccall(FunccallContext ctx) {				
-		System.out.print("func " + ctx.NAME().getText() + "called\n");
 		Type para_type;
 		List<TestContext> testlist = ctx.test();
 		ArrayList<Type> array = new ArrayList<Type>();
@@ -411,14 +405,12 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	//visitor for compound_stmt
 	@Override
 	public Type visitCompound_stmt(Compound_stmtContext ctx) {			
-		System.out.println("get into a compound stmt");
 		visitChildren(ctx);
 	    return null;
 	}
 	//visitor for if_stmt
 	@Override
 	public Type visitIf_stmt(If_stmtContext ctx) {							
-		System.out.println("get into an IF ");
 		Type t1 = visit(ctx.t1);//if judgement condition
 		if(t1 == Type.INT)
 			t1 = Type.BOOL;
@@ -426,7 +418,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 		 visit(ctx.s1);
 		
 		if (ctx.s2 != null) {//else-if judgement condition
-			System.out.println("get into an ELSE-IF ");
 			Type t2 = visit(ctx.t2);
 			if(t2 == Type.INT)
 				t2 = Type.BOOL;
@@ -436,26 +427,21 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 
 		
 	    if (ctx.s3 != null) {
-	    	System.out.println("get into an ELSE ");
 	    	visit(ctx.s3);
 	    }
 
-	    System.out.println("exit IF-ELSE ");
 	    return null;
 	}
 	//visitor for while_stmt
 	@Override
 	public Type visitWhile_stmt(While_stmtContext ctx) {				
-		System.out.println("get into a WHILE loop");
 		Type t = visit(ctx.test());
 		if(t == Type.INT)
 			t = Type.BOOL;
 		checkType(Type.BOOL, t, ctx);
-		System.out.println("enter s1\n");
 	    visit(ctx.s1);
 	    if (ctx.s2 != null)
 			visit(ctx.s2);
-	    System.out.println("exit WHILE loop ");
 	    return null;
 	}
 	//visitor for parens
@@ -476,7 +462,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	//visitor for funcdef
 	@Override
 	public Type visitFuncdef(FuncdefContext ctx) {						
-		System.out.println("get into function definition");
 		typeTable.enterLocalScope();	
 		local = true;
 		ParameterlistContext pl = ctx.parameterlist();//parameter list
@@ -493,13 +478,11 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 		typeTable.exitLocalScope();
 		local = false;
 		define(ctx.NAME().getText(), functype, ctx);
-		System.out.println("Function " + ctx.NAME().getText() + " is defined, type: " +  functype);
 		return null;
 	}
 	//visitor for FunctionCall
 	@Override
 	public Type visitFunctionCall(FunctionCallContext ctx) {
-		System.out.print("IO called\n");
 		Type para_type;
 		Type t1;
 		if(ctx.testlist() != null) {			
@@ -515,7 +498,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 			Type type = typeTable.get(ctx.var.getText());
 			if(type == null) {
 				define(ctx.var.getText(), t1, ctx);
-				System.out.println(t1.toString() + " variable " + ctx.var.getText() + " is DEFINED.");
 			}
 			else if(type != t1){
 				remove(ctx.var.getText(), type, ctx);
@@ -524,7 +506,6 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 				System.out.println(t1.toString() + " variable " + ctx.var.getText() + " is REDIFINED.");
 			}
 		}
-		System.out.println("Function " + ctx.func.getText() + " is called, its type is " + para_type +" -> " + t1);
 	    return t1;
 	}
 }

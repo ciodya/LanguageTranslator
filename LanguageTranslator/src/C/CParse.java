@@ -42,6 +42,7 @@ public class CParse {
 		ParseTree tree = parser.externalDeclaration();
 		int errors = parser.getNumberOfSyntaxErrors();
 		out.println(errors + " syntactic errors");
+		System.out.println(tree.toStringTree(parser));
 		if (errors > 0)
 			throw new CException();
 		return tree;

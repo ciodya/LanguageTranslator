@@ -5,6 +5,12 @@ _Bool c = 5; //error
 _Bool pos(int n){
 	return n;//error
 }
+int fac(int n){
+	return n;
+}
+char boo(char n){
+	return n;
+}
 void main(){
 	int i = 3;
 	_Bool b = 1;
@@ -14,10 +20,10 @@ void main(){
 	b = i>0;
 	if(b) printf(i);
 	if(1) printf(i+1);
-	if(i) printf(i); //error
 	b = pos('1'); //error
 	while(pos(7)){
-		i = i+1;
+		i = i+fac(5);
+		i = i+boo('a'); //error
 	}
 }
 

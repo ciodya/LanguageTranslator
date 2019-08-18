@@ -40,6 +40,7 @@ public class pythonParse {
 		ParseTree tree = parser.input();
 		int errors = parser.getNumberOfSyntaxErrors();
 		out.println(errors + " syntactic errors");
+		System.out.println(tree.toStringTree(parser));
 		if (errors > 0)
 			throw new pythonException();
 		return tree;
