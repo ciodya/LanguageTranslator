@@ -12,6 +12,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
@@ -25,6 +27,12 @@ public class LayoutController extends BorderPane{
 	private ObservableList<String> box_content = FXCollections
 			.observableArrayList("C","Python");
 	//Graphics
+	@FXML
+	private VBox vbox;
+	@FXML
+	private HBox hbox;
+	@FXML
+	private BorderPane root;
 	//Language Chooser and buttons
 	@FXML
 	private Button button;
@@ -62,12 +70,14 @@ public class LayoutController extends BorderPane{
 	//Layout initialization
 	@FXML
 	private void initialize() {
-	box1.setValue("C");
-	box2.setValue("Python");
-	box1.setItems(box_content);
-	box2.setItems(box_content);
-	text1.setFocusTraversable(false);
-	text1.setPromptText("Please enter code here");
+		box1.setValue("C");
+		box2.setValue("Python");
+		box1.setItems(box_content);
+		box2.setItems(box_content);
+		text1.setFocusTraversable(false);
+		text1.setPromptText("Please enter code here");
+		text1.prefHeightProperty().bind(vbox.heightProperty().multiply(0.45));
+		text2.prefHeightProperty().bind(vbox.heightProperty().multiply(0.45));
 	}
 	//Click Translate button
 	@FXML

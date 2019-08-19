@@ -38,6 +38,8 @@ public class Main extends Application{
 		Layout = loader.load();
 		loader.setController(Main.class.getResource("LayoutController.java"));
 		Scene scene = new Scene(Layout);
+		primaryStage.setHeight(600);
+		primaryStage.setWidth(600);
 		primaryStage.setScene(scene);
 	}
 }
