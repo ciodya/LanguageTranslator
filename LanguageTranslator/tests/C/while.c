@@ -1,13 +1,20 @@
-//test while-commands
+//Test while-commands
+int pos(int a){
+	return a;
+}
 
 void main(){
-	//Read a number, and print all squares
-	//up to and including that number
 	int a ;
 	scanf(a);
 	int i = 1;
-	while(i*i < a+1){
-		printf(i*i);
-		i = i+1;
+	char c = 's';
+	while(i*i < a+1){ //condition with comparison&arithmatic expression
+		printf(i*i); //print function called in while statement
+		i = i+1; //assignmeng command in while 
+	}
+	while(c != 'a'){ //condition with char variable&comparison expression
+		int b = pos(8); //function call and assignment command
+		int num;
+		scanf(num); //scanf function called in while
 	}
 }

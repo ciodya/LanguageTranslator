@@ -57,7 +57,7 @@ public class CRun {
 		out.println();
 		out.println("Syntactic analysis ...");
 		CParser parser = new CParser(tokens);
-	        ParseTree tree = parser.externalDeclaration();
+	    ParseTree tree = parser.externalDeclaration();
 		int errors = parser.getNumberOfSyntaxErrors();
 		out.println(errors + " syntactic errors");
 		if (errors > 0) {
@@ -69,7 +69,6 @@ public class CRun {
 	//Contextual analysis for a C source program
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
-	// Perform contextual analysis of a C program, 
 		out.println("Contextual analysis ...");
 		CCheckerVisitor checker =
 		   new CCheckerVisitor(tokens);

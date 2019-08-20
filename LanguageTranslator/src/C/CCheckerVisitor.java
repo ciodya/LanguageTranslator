@@ -102,8 +102,6 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	}
 	// Type checking
 	private static final Type.Mapping
-	   COMPTYPE = new Type.Mapping(
-	      new Type.Pair(Type.INT, Type.INT), Type._BOOL),
 	   ARITHTYPE = new Type.Mapping(
 	      new Type.Pair(Type.INT, Type.INT), Type.INT);
 	//Check the expected type and actual type of a variable
@@ -200,23 +198,19 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		Type t1;
 		Type t2;
 		if(ctx.c1 != null) {
-			
 			if(t == Type._BOOL && (ctx.c1.getText().equals("0") | ctx.c1.getText().equals("1")))
 				t1 = Type._BOOL;
 			else
 				t1 = visit(ctx.c1);
 			checkType(t, t1, ctx);
 		}
-			
 		if(ctx.c2 != null) {
-			
 			if(t == Type._BOOL && (ctx.c2.getText().equals("0") | ctx.c2.getText().equals("1")))
 				t2 = Type._BOOL;
 			else
 				t2 = visit(ctx.c2);
 			checkType(t, t2, ctx);
 		}
-	
 		if(ctx.id1 != null)
 			define(ctx.id1.getText(), t, ctx);
 		if(ctx.id2 != null)
@@ -296,7 +290,7 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		visitChildren(ctx);
 	    return null;
 	}
-	//visitor forblockitmlist
+	//visitor for blockitmlist
 	@Override
 	public Type visitBlockItemList(BlockItemListContext ctx) {				
 		visitChildren(ctx);
@@ -365,7 +359,7 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 		if(ctx.expression_suffix() != null) {
 			for(Expression_suffixContext e : ctx.expression_suffix()) {
 				t2 = visit(e);
-				t1 = checkBinary(COMPTYPE, t1, t2, ctx);
+				t1 = Type._BOOL;
 			}
 			return t1;
 		}

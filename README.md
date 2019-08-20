@@ -26,7 +26,7 @@ For detailed tests, more test files written in Python or C can be found in "Lang
 
 ## User Guide
 To work with the application, Eclipse and JavaFX plug-in are recommended to be first installed on the machine.
-The program can be directly run with Application.jar file.
+Also, Application.jar file can be directly run with a double click.
 The GUI is as follows:
 
 ![](/image/GUI.PNG)

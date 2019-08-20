@@ -1,18 +1,18 @@
-// Test procedures.
+// Test void functions.
 
 int total = 0;
-
-void add (int inc){
-	total = total + inc;
+int pos(int a){
+	return a;
 }
-
+void add (int inc){
+	inc = inc + pos(5); //function call
+	total = total + inc; //assignment command
+}
 void main (){
-// Read numbers until a 0 is read.
-// Print their total.
 	int i ;
 	scanf(i);
 	while (i > 0){
-		add(i);
+		add(i); //function call
 		scanf(i);
 	}
 	printf(total);

@@ -3,7 +3,7 @@
  * Msc Project fall, 2019
  * Author: Yidi Cao
  * 
- * C 2011 grammar built from the C11 Spec 
+ * C grammar built from the C11 Standard 
  * 
  * The grammar is based on the file of following Github:
  * https://github.com/antlr/grammars-v4/blob/master/c/C.g4
@@ -79,7 +79,7 @@ castExpression
     |	Identifier																			#id
     |	(LeftParen expression RightParen)													#parens
     |	(Identifier LeftParen actual? RightParen)											#func_call
-    |	( CharValue )																		#char_value
+    |	(CharValue)																			#char_value
     |	(CharArray)																			#char_array
     ;
 

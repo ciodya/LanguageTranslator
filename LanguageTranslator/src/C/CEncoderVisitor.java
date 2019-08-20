@@ -55,9 +55,9 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	}
 	@Override
 	public Void visitVar_del(Var_delContext ctx) {
-		for(int i = 0; i < infunc; i++)
-			obj.addCode("\t");
 		if(ctx.id2 != null) {
+			for(int i = 0; i < infunc; i++)
+				obj.addCode("\t");
 			String inst = "";
 			inst += ctx.id2.getText() + " = ";
 			obj.addCode(inst);
@@ -70,6 +70,8 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 			obj.addCode("\n");
 		}
 		if(ctx.id4 != null) {
+			for(int i = 0; i < infunc; i++)
+				obj.addCode("\t");
 			String inst = "";
 			inst += ctx.id4.getText() + " = ";
 			obj.addCode(inst);
