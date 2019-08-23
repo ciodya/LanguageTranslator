@@ -112,7 +112,7 @@ testlist
 test
 	: 
 	(NOT e1= comparison) 
-	| e2= comparison
+	| (e2= comparison)
 	;
 
 comparison

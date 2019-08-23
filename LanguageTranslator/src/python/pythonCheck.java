@@ -21,7 +21,7 @@ public class pythonCheck {
 				throw new pythonException();
 			check(args[0]);
 		} catch (pythonException x) {
-			out.println("Contextual analysis failed");
+			out.println("There are contextual errors!");
 		} catch (Exception x) {
 			x.printStackTrace(out);
 		}
@@ -41,8 +41,6 @@ public class pythonCheck {
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens)
 			throws Exception {
-		out.println();
-		out.println("Syntactic analysis ...");
 		pythonParser parser = new pythonParser(tokens);
 	        ParseTree tree = parser.input();
 		int errors = parser.getNumberOfSyntaxErrors();
@@ -54,7 +52,6 @@ public class pythonCheck {
 	//Contextual analysis
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens)
 			throws Exception {
-		out.println("Contextual analysis ...");
 		pythonCheckerVisitor checker =
 		   new pythonCheckerVisitor(tokens);
 		checker.visit(tree);

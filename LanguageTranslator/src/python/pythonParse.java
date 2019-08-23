@@ -21,7 +21,7 @@ public class pythonParse {
 			ParseTree tree =
 			   syntacticAnalyse(args[0]);
 		} catch (pythonException x) {
-			out.println("Compilation failed");
+			out.println("Translation failed");
 		} catch (Exception x) {
 			x.printStackTrace(out);
 		}
@@ -30,8 +30,6 @@ public class pythonParse {
 	private static ParseTree syntacticAnalyse
 			(String filename)
 			throws Exception {
-		out.println();
-		out.println("Syntactic analysis ...");
 		pythonLexer lexer = new pythonLexer(
 				CharStreams.fromFileName(filename));
 		CommonTokenStream tokens = 

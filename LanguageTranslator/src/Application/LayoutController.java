@@ -63,7 +63,6 @@ public class LayoutController extends BorderPane{
 	}
 	//Warning of contextual errors
 	public void contextualError(String errors) {
-		text2.setText(null);
 		text2.setText("There are contextual errors with the input!\n" + errors);
 	}
 	//Actions

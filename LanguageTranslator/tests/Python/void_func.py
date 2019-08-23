@@ -1,13 +1,19 @@
-# Test procedures.
+# Test void functions
 total = 0
-def add (inc):
+def add (inc): #void function with single parameter
     total = total + inc
 
-# Read numbers until a 0 is read.
-# Print their total.
+def pos(): #void function with no parameter
+    total = True
+
+def fac(a,b): #void function with multiple parameters
+    total = a+b
+
 i = input()
+pos() #function pos called
+fac(9,19) #function fac called
+print(total)
 while i > 0:
-    add(i)
+    add(i) #function add called
     i = input()
 
-print(total)

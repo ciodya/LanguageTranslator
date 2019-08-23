@@ -1,12 +1,8 @@
 # Test scope checking.
-y = x;  #error
+y = x  #error, variable x is undeclared
 x = 1
-x = "a"
-
+x = "a" #NOT error, variable type can be reassigned
 def test():
     z = 10
-
-x = 0
-n = 0
-n = 1
-x = x+z #error
+x = z #error, variable z is used beyond its scope
+print(pos()) #error, function pos() is undeclared

@@ -109,8 +109,8 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	                        Type typeActual,
 	                        ParserRuleContext construct) {
 		if (! typeActual.equiv(typeExpected))
-			reportError("type is " + typeActual
-			   + ", should be " + typeExpected,
+			reportError("actual type is " + typeActual
+			   + ", expected type is " + typeExpected,
 			   construct);
 	}
 	//Check the type of a function

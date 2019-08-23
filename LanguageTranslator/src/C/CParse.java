@@ -23,7 +23,7 @@ public class CParse {
 			ParseTree tree =
 			   syntacticAnalyse(args[0]);
 		} catch (CException x) {
-			out.println("Compilation failed");
+			out.println("Translation failed");
 		} catch (Exception x) {
 			x.printStackTrace(out);
 		}
@@ -32,8 +32,6 @@ public class CParse {
 	private static ParseTree syntacticAnalyse
 			(String filename)
 			throws Exception {
-		out.println();
-		out.println("Syntactic analysis ...");
 		CLexer lexer = new CLexer(
 				CharStreams.fromFileName(filename));
 		CommonTokenStream tokens = 

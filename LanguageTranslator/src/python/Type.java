@@ -76,6 +76,9 @@ public abstract class Type {
 	public Sequence(ArrayList<Type> seq) {
 	    sequence = seq;
 	}
+	public int size() {
+	    return sequence.size();
+	}
 	public boolean equiv(Type that) { //check whether equivalent
 	    if (that instanceof Sequence) {
 		ArrayList<Type> thatSequence = ((Sequence)that).sequence;
@@ -135,15 +138,21 @@ public abstract class Type {
 	 //Mapping type for functions
 	public static class Mapping extends Type { 
 		public Type domain, range;
-		public ArrayList<Type> domain_seq;
+		public Type.Sequence domain_seq;
+//		public ArrayList<Type> domain_seq;
 
 		public Mapping (Type d, Type r) {	//single parameter
 			domain = d;
 			range = r;
+			domain_seq = null;
 		}
-		public Mapping (ArrayList<Type> d, Type r) {	//multiple parameters
+		public Mapping (Type.Sequence d, Type r) {	//multiple parameters
+			domain = null;
 			domain_seq = d;
 			range = r;
+		}
+		public int size() {
+			return domain_seq.size();
 		}
 		public boolean equiv (Type that) {
 			if (that instanceof Mapping) {

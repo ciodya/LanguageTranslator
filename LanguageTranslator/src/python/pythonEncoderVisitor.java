@@ -71,7 +71,15 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 		}
 		if(ctx.func.getText().trim().equals("print")) {
 			obj.addCode("printf(");
-			visit(ctx.testlist());
+			List<TestContext> nodes = ctx.testlist().test();
+			int len = nodes.size();
+			if (nodes != null) {
+				for (int i = 0; i < len; i++) {
+					if(i>0)
+						obj.addCode(",");
+					 visit(nodes.get(i));
+				}
+			}
 			obj.addCode(")");
 		}
 		obj.addCode(";\n");	
@@ -152,6 +160,7 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 	@Override
 	public Void visitTestlist(TestlistContext ctx) {
 		visitChildren(ctx);
+		
 		return null;
 	}
 	@Override
@@ -214,7 +223,6 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 	}
 	@Override
 	public Void visitString(StringContext ctx) {
-		System.out.print(ctx.getText());
 		obj.addCode(ctx.getText());
 		return null;
 	}
@@ -232,11 +240,15 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 	public Void visitFunccall(FunccallContext ctx) {
 		obj.addCode(ctx.NAME().getText());
 		obj.addCode("(");
-		List<TestContext> testlist = ctx.test();
-		if(testlist != null) 	
-			for(TestContext e:testlist) { 
-				visit(e);
+		List<TestContext> nodes = ctx.test();
+		int len = nodes.size();
+		if (nodes != null) {
+			for (int i = 0; i < len; i++) {
+				if(i>0)
+					obj.addCode(",");
+				 visit(nodes.get(i));
 			}
+		}
 		obj.addCode(")");
 		return null;
 	}
@@ -261,19 +273,29 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 		visit(ctx.t1);
 		obj.addCode(")");
 		visit(ctx.s1);
+		
+		List<SuiteContext> suites = ctx.suite();
+		List<TestContext> tests = ctx.test();
+		int len = suites.size();
+		int len_t = tests.size();
+		 if (ctx.s3 != null)
+			 len--;
 		if(ctx.s2 != null) {	//generate elif statement
-			for(int i = 0; i < infunc-1; i++)
-				obj.addCode("\t");
-			obj.addCode("else if(");
-			visit(ctx.t2);
-			obj.addCode(")");
-			visit(ctx.s2);
+			for(int i = 1; i < len_t; i++) {
+				for(int j = 0; j < infunc-1; j++)
+					obj.addCode("\t");
+				obj.addCode("else if(");
+				visit(tests.get(i));
+				obj.addCode(")");
+				visit(suites.get(i));
+			}
+			
 		}
 		if(ctx.s3 != null) {	//generate else statement
 			for(int i = 0; i < infunc-1; i++)
 				obj.addCode("\t");
 			obj.addCode("else");
-			visit(ctx.s3);
+			visit(suites.get(len));
 		}
 		infunc--;	
 		return null;
@@ -323,7 +345,6 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 		visit(ctx.suite());
 		infunc--;
 		local_var_list.clear();
-		obj.addCode("\n");
 		return null;
 	}
 	@Override
@@ -344,7 +365,13 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 	}
 	@Override
 	public Void visitParameter(ParameterContext ctx) {
-		obj.addCode("int " + ctx.NAME().getText());
+		String type = "int";
+		if(ctx.test()!=null) {
+			type = ctx.test().getText();
+			if((!type.trim().equals("int")) && (!type.trim().equals("bool")) && (!type.trim().equals("string")))
+				type = "int";
+			}
+		obj.addCode(type + " " + ctx.NAME().getText());
 		local_var_list.add(ctx.NAME().getText());
 		return null;
 	}

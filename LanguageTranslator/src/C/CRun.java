@@ -29,10 +29,9 @@ public class CRun {
 	public static void main(String input,LayoutController controller) {
 		try {
 			python objprog = compile(input,controller);
-			out.println("Interpretation ...");
 			objprog.interpret(tracing);
 		} catch (CException x) {
-			out.println("Compilation failed");
+			out.println("Translation failed");
 		} catch (Exception x) {
 			x.printStackTrace(out);
 		}
@@ -54,8 +53,6 @@ public class CRun {
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
-		out.println();
-		out.println("Syntactic analysis ...");
 		CParser parser = new CParser(tokens);
 	    ParseTree tree = parser.externalDeclaration();
 		int errors = parser.getNumberOfSyntaxErrors();
@@ -69,7 +66,6 @@ public class CRun {
 	//Contextual analysis for a C source program
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
-		out.println("Contextual analysis ...");
 		CCheckerVisitor checker =
 		   new CCheckerVisitor(tokens);
 		checker.visit(tree);

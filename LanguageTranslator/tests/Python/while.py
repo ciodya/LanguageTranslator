@@ -1,11 +1,22 @@
-# test while-commands
-
-#Read a number, and print all squares
-#up to and including that numbe
+# Test while-else commands
 a = input()
 i = 1
-while i*i < a+1:
-	print(i*i)
+def fac(a,b):
+	i = b+1+a
+	return i
+while i*i < a+1: #comparison expression as condition
+	a = fac(a,9) #function called in while statement
+	if a>10: #if-elif-else statement in while statement
+		print(i*i)
+	elif a == 10:
+		print(a)
+	else:
+		print(a+1)
 	i = i+1
 else:
-    print(a)
+    def pos(a): #function declared in while statement
+		return a+i
+	print(pos(8))
+
+while fac(i,a): #function call as condition
+	print(a)

@@ -1,9 +1,8 @@
 // Test type checking.
-
-int n = 'a'; //error, 'a' is not int
-_Bool c = 5; //error, 5 is not _Bool
+int n = 'a'; //error, value 'a' is not int
+_Bool c = 5; //error, value is not _Bool
 _Bool pos(int n){
-	return n;//error, return type should be _Bool
+	return n;//error, return type conflicts with declaration
 }
 int fac(int n){
 	return n;
@@ -15,7 +14,7 @@ void main(){
 	int i = 3;
 	_Bool b = 1;
 	i = i+1;
-	i = b; //error, i is declared to be int
+	i = b; //error, variable i has declared to be int
 	i = b*2; //error, boolean variable cannot be operand of arithmatic expression
 	b = i>0;
 	if(b) printf(i);

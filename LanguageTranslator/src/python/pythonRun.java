@@ -22,10 +22,9 @@ public class pythonRun {
 	public static void main(String input,LayoutController controller) {
 		try {
 			C objprog = compile(input,controller);
-			out.println("Interpretation ...");
 			objprog.interpret(tracing);
 		} catch (pythonException x) {
-			out.println("Compilation failed");
+			out.println("Translation failed");
 		} catch (Exception x) {
 			x.printStackTrace(out);
 		}
@@ -47,8 +46,6 @@ public class pythonRun {
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens,LayoutController controller)
 			throws Exception {
-		out.println();
-		out.println("Syntactic analysis ...");
 		pythonParser parser = new pythonParser(tokens);
 	        ParseTree tree = parser.input();
 		int errors = parser.getNumberOfSyntaxErrors();
@@ -63,7 +60,6 @@ public class pythonRun {
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens
     										,LayoutController controller)
 			throws Exception {
-		out.println("Contextual analysis ...");
 		pythonCheckerVisitor checker =
 		   new pythonCheckerVisitor(tokens);
 		checker.visit(tree);

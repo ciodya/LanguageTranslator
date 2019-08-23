@@ -1,10 +1,11 @@
 # Test functions.
 
 def test (n):
-    r = 10
+	#variables declaration in function
+    r = "Hello"
     s = 20
-    t = 30
+    t = True
     print(s)
     return r
 
-print(test(5))
+test(5) #function call

@@ -2,7 +2,6 @@
 int fac(int n){
 	return n;
 }
-
 void main(){
 	int g,e; //multiple variable declaration in one line
 	e = 3; //value assignment

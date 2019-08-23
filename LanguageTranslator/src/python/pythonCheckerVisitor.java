@@ -43,7 +43,7 @@ import python.pythonParser.While_stmtContext;
 
 public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> implements pythonVisitor<Type> {
 	private int errorCount = 0;
-	private String errors = null;
+	private String errors = "";
 	private CommonTokenStream tokens;
 	private boolean local = false;
 	// Constructor
@@ -104,15 +104,13 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	private Type retrieve (String id, ParserRuleContext occ) {
 		Type type = typeTable.get(id);
 		if (type == null) {
-			reportError(id + " is undeclared, so it cannot be retrieved", occ);
+			reportError(id + " is undeclared", occ);
 			return Type.ERROR;
 		} else
 			return type;
 	}
 	// Type checking
 	private static final Type.Mapping  
-	   COMPTYPE = new Type.Mapping(
-	      new Type.Pair(Type.INT, Type.INT), Type.BOOL),
 	   ARITHTYPE = new Type.Mapping(
 	      new Type.Pair(Type.INT, Type.INT), Type.INT);
 	//Check the expected type and actual type of a variable
@@ -120,8 +118,8 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	                        Type typeActual,
 	                        ParserRuleContext construct) {
 		if (! typeActual.equiv(typeExpected))
-			reportError("type is " + typeActual
-			   + ", should be " + typeExpected,
+			reportError("actual type is " + typeActual
+			   + ", expected type is " + typeExpected,
 			   construct);
 	}
 	//Check the type of a function
@@ -129,7 +127,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	                        ParserRuleContext call) {
 		Type typeProc = retrieve(id, call);
 		if (! (typeProc instanceof Type.Mapping)) {
-			reportError(id + " is not a procedure", call);
+			reportError(id + " is not a function", call);
 			return Type.ERROR;
 		} else {
 			Type.Mapping mapping = (Type.Mapping)typeProc;
@@ -137,6 +135,25 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 			return mapping.range;
 		}
 	}
+	//Return the parameter type of a function 
+		private Type checkDomain (String id, 
+		                        ParserRuleContext call) {
+			Type typeProc = retrieve(id, call);
+			if (! (typeProc instanceof Type.Mapping)) {
+				reportError(id + " is not a function", call);
+				return Type.ERROR;
+			} else {
+				Type.Mapping mapping = (Type.Mapping)typeProc;
+				return mapping.domain;
+			}
+		}
+	//Return the result type of a function
+		private Type returnType (String id, 
+		                        ParserRuleContext call) {
+			Type typeProc = retrieve(id, call);
+				Type.Mapping mapping = (Type.Mapping)typeProc;
+				return mapping.range;
+		}
 	//Check type of binary operations
 	private Type checkBinary (Type.Mapping typeOp,
 	                          Type typeArg1, Type typeArg2,
@@ -181,6 +198,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 					v_value = value_list.get(i);
 					Pattern pattern = Pattern.compile("[0-9]*");  
 					//assign a variable to another variable
+					Type temp = Type.INT;
 					if(!pattern.matcher(v_value.getText()).matches()
 							&& !v_value.getText().equals("True")
 							&& !v_value.getText().equals("False")
@@ -196,28 +214,28 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 							&& !v_value.getText().contains("!=")
 							&& !v_value.getText().contains("<=")
 							&& !v_value.getText().contains(">=")
+							&& !v_value.getText().contains("(")
 							)
 						//check whether the variable at the right of "=" has been defined
-						retrieve(v_value.getText(), ctx);
-					t = visit(v_value);
-					Type type;
-					//This is a local variable, check if it has been defined locally
-					if(local ==true)
-						type = typeTable.getLocal(v_name.getText());
-					//This is a global variable, check if it has been defined globally
-					else
-						type = typeTable.getGlobal(v_name.getText());
-					//The variable has not been defined
-					if(type == null) {
-						define(v_name.getText(), t, ctx);
-						System.out.println(t.toString() + " variable " + v_name.getText() + " is DEFINED.");
-					}
-					//The variable has been defined, python allows it to be redefined
-					else if(type != t){
-						remove(v_name.getText(), type, ctx);
-						System.out.println(type.toString() + " variable " + v_name.getText() + " is REMOVED.");
-						define(v_name.getText(), t, ctx);
-						System.out.println(t.toString() + " variable " + v_name.getText() + " is REDIFINED.");
+						temp = retrieve(v_value.getText(), ctx);
+					if(!temp.equals(Type.ERROR)) {
+						t = visit(v_value);
+						Type type;
+						//This is a local variable, check if it has been defined locally
+						if(local ==true)
+							type = typeTable.getLocal(v_name.getText());
+						//This is a global variable, check if it has been defined globally
+						else
+							type = typeTable.getGlobal(v_name.getText());
+						//The variable has not been defined
+						if(type == null) {
+							define(v_name.getText(), t, ctx);
+						}
+						//The variable has been defined, python allows it to be redefined
+						else if(type != t){
+							remove(v_name.getText(), type, ctx);
+							define(v_name.getText(), t, ctx);
+						}
 					}
 				}
 			}
@@ -264,7 +282,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 		if(ctx.comparison_suffix() != null) {
 			for(Comparison_suffixContext e : ctx.comparison_suffix()) {
 				t2 = visit(e);
-				t1 = checkBinary(COMPTYPE, t1, t2, ctx);
+				t1 = Type.BOOL;
 			}
 			return t1;
 		}
@@ -301,45 +319,62 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	}
 	//visitor for num
 	@Override
-	public Type visitNum(NumContext ctx) {								
+	public Type visitNum(NumContext ctx) {	
 		return Type.INT;
 	}
 	//visitor for string
 	@Override
-	public Type visitString(StringContext ctx) {						
+	public Type visitString(StringContext ctx) {	
 		return Type.STRING;
 	}
 	//visitor for True
 	@Override
-	public Type visitTrue(TrueContext ctx) {							
+	public Type visitTrue(TrueContext ctx) {	
 		return Type.BOOL;
 	}//visitor for False
 	@Override
-	public Type visitFalse(FalseContext ctx) {							
+	public Type visitFalse(FalseContext ctx) {		
 		return Type.BOOL;
 	}
 	//visitor for id
 	@Override
-	public Type visitId(IdContext ctx) {								
+	public Type visitId(IdContext ctx) {	
 		return retrieve(ctx.NAME().getText(), ctx);
 	}
 	//visitor for funccall
 	@Override
-	public python.Type visitFunccall(FunccallContext ctx) {				
-		Type para_type;
+	public Type visitFunccall(FunccallContext ctx) {	
+		Type.Sequence para_type;
 		List<TestContext> testlist = ctx.test();
 		ArrayList<Type> array = new ArrayList<Type>();
 		Type t;
-		if(testlist != null) {		
+		Type t1;
+		if(!testlist.isEmpty()) {		
 			for(TestContext e:testlist) {
 				t = visit(e);
 				array.add(t);
 			}
 			para_type = new Type.Sequence(array);
+			Type domain_type = checkDomain(ctx.NAME().getText(), ctx);
+			if(domain_type.equiv(Type.EMPTY)) {
+				t1 = checkCall(ctx.NAME().getText(), para_type, ctx);
+				}
+			else {
+				Type type = retrieve(ctx.NAME().getText(), ctx);
+				Type.Mapping mapping =  (Type.Mapping)type;
+				if(testlist.size() == 1 && mapping.domain_seq  == null)
+					t1 = returnType(ctx.NAME().getText(), ctx);
+				else if(testlist.size() > 1 && mapping.domain_seq  != null)
+					t1 = returnType(ctx.NAME().getText(), ctx);
+				else	
+					t1 = checkCall(ctx.NAME().getText(), para_type, ctx);
+				}
 			}
-		else 
+		else { 
 			para_type = Type.EMPTY;
-		Type t1 = checkCall(ctx.NAME().getText(), para_type, ctx);
+			
+			t1 = checkCall(ctx.NAME().getText(), para_type, ctx);
+		}
 	    return t1;
 	}
 	//visitor for parameterList
@@ -365,19 +400,19 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	public Type visitParameter(ParameterContext ctx) {					
 		String type;
 		Type t;
-		if(ctx.test() != null) {
-			type = ctx.test().toString();
-			if(type == "int") {//parameter:int
+		if(ctx.test()!= null) {
+			type = ctx.test().getText();
+			if(type.trim().equals("int")) {//parameter:int
 				t = Type.INT;
 				define(ctx.NAME().getText(),t,ctx);
 				return t;
 			}
-			else if(type == "bool") {//parameter:bool
+			else if(type.trim().equals("bool")) {//parameter:bool
 				t = Type.BOOL;
 				define(ctx.NAME().getText(),t,ctx);
 				return t;
 			}
-			else if(type == "string") {//parameter:string
+			else if(type.trim().equals("string")) {//parameter:string
 				t = Type.STRING;
 				define(ctx.NAME().getText(),t,ctx);
 				return t;
@@ -410,26 +445,31 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	}
 	//visitor for if_stmt
 	@Override
-	public Type visitIf_stmt(If_stmtContext ctx) {							
+	public Type visitIf_stmt(If_stmtContext ctx) {	
+		List<SuiteContext> suites = ctx.suite();
+		List<TestContext> tests = ctx.test();
+		int len = suites.size();
+		int len_t = tests.size();
+		 if (ctx.s3 != null)
+			 len--;
 		Type t1 = visit(ctx.t1);//if judgement condition
 		if(t1 == Type.INT)
 			t1 = Type.BOOL;
 		checkType(Type.BOOL, t1, ctx);
-		 visit(ctx.s1);
-		
+		visit(ctx.s1);
 		if (ctx.s2 != null) {//else-if judgement condition
-			Type t2 = visit(ctx.t2);
-			if(t2 == Type.INT)
-				t2 = Type.BOOL;
-			checkType(Type.BOOL, t2, ctx);
-			visit(ctx.s2);
+			Type t2;
+			for(int i = 1; i < len_t; i++) {
+				t2 = visit(tests.get(i));
+				if(t2 == Type.INT)
+					t2 = Type.BOOL;
+				checkType(Type.BOOL, t2, ctx);
+				visit(suites.get(i));
+			}	
 		}
-
-		
 	    if (ctx.s3 != null) {
-	    	visit(ctx.s3);
+	    	visit(suites.get(len));
 	    }
-
 	    return null;
 	}
 	//visitor for while_stmt
@@ -446,7 +486,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	}
 	//visitor for parens
 	@Override
-	public Type visitParens(ParensContext ctx) {						
+	public Type visitParens(ParensContext ctx) {	
 		return visit(ctx.test());
 	}
 	//visitor for return_stmt
@@ -472,7 +512,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 		else
 			seqtype = Type.EMPTY;
 		Type rettype = visit(ctx.suite());
-		
+
 		Type functype = new Type.Mapping(seqtype, rettype);//function type
 	    define(ctx.NAME().getText(), functype, ctx);	// put function type  into type table
 		typeTable.exitLocalScope();
@@ -485,10 +525,11 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 	public Type visitFunctionCall(FunctionCallContext ctx) {
 		Type para_type;
 		Type t1;
-		if(ctx.testlist() != null) {			
+		if(ctx.testlist() != null) { //function 'print'			
 			para_type =Type.SEQUENCE_INT;
+			visit(ctx.testlist());
 			}
-		else 
+		else //function 'input'
 			para_type = Type.EMPTY;
 		if(ctx.func.getText().equals("input"))
 			t1 = Type.INT;
@@ -501,9 +542,7 @@ public class pythonCheckerVisitor extends AbstractParseTreeVisitor<Type> impleme
 			}
 			else if(type != t1){
 				remove(ctx.var.getText(), type, ctx);
-				System.out.println(type.toString() + " variable " + ctx.var.getText() + " is REMOVED.");
 				define(ctx.var.getText(), t1, ctx);
-				System.out.println(t1.toString() + " variable " + ctx.var.getText() + " is REDIFINED.");
 			}
 		}
 	    return t1;

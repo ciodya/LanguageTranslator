@@ -11,7 +11,13 @@ package C;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
+import C.CParser.ExternalDeclarationContext;
+
 import java.io.*;
+import java.util.Arrays;
+import java.util.concurrent.Future;
+
+import javax.swing.JDialog;
 
 public class CCheck {
 	private static PrintStream out = System.out;
@@ -22,7 +28,7 @@ public class CCheck {
 				throw new CException();
 			check(args[0]);
 		} catch (CException x) {
-			out.println("Contextual analysis failed");
+			out.println("There are contextual errors!");
 		} catch (Exception x) {
 			x.printStackTrace(out);
 		}
@@ -42,10 +48,8 @@ public class CCheck {
 	private static ParseTree syntacticAnalyse
 			(CommonTokenStream tokens)
 			throws Exception {
-		out.println();
-		out.println("Syntactic analysis ...");
 		CParser parser = new CParser(tokens);
-	        ParseTree tree = parser.externalDeclaration();
+        ParseTree tree = parser.externalDeclaration();
 		int errors = parser.getNumberOfSyntaxErrors();
 		out.println(errors + " syntactic errors");
 		if (errors > 0)
@@ -55,7 +59,6 @@ public class CCheck {
 	//Contextual analysis
     private static void contextualAnalyse (ParseTree tree, CommonTokenStream tokens)
 			throws Exception {
-		out.println("Contextual analysis ...");
 		CCheckerVisitor checker =
 		   new CCheckerVisitor(tokens);
 		checker.visit(tree);
