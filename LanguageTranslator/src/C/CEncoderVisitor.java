@@ -45,7 +45,7 @@ import C.CParser.Void_funcContext;
 import C.CParser.While_stmtContext;
 
 public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements CVisitor<Void>  {
-	private int infunc = 0;
+	private int infunc = 0; //variable to record numbers of indentation
 	private python obj = new python();
 	public python getPython() {
 	    return obj;
@@ -58,15 +58,15 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	@Override
 	public Void visitVar_del(Var_delContext ctx) {
 		if(ctx.id2 != null) {
-			for(int i = 0; i < infunc; i++)
+			for(int i = 0; i < infunc; i++) //indentation
 				obj.addCode("\t");
 			String inst = "";
 			inst += ctx.id2.getText() + " = ";
 			obj.addCode(inst);
 			if(ctx.typeSpecifier().getText().equals("_Bool") && ctx.c1.getText().trim().equals("0"))
-				obj.addCode("False");
+				obj.addCode("False");// convert boolean value from 0 to False
 			else if(ctx.typeSpecifier().getText().equals("_Bool") && ctx.c1.getText().trim().equals("1"))
-				obj.addCode("True");
+				obj.addCode("True");// convert boolean value from 1 to True
 			else
 				visit(ctx.c1);
 			obj.addCode("\n");
@@ -86,9 +86,9 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitVoid_func(Void_funcContext ctx) {
 		String inst = "";
 		String funcname = ctx.id1.getText().trim();
-		if(!funcname.equals("main")) {
+		if(!funcname.equals("main")) { //omit function 'main' in C
 			inst = "def " + funcname;
-			if(ctx.parameterlist() !=null) {
+			if(ctx.parameterlist() !=null) { //omit parameter types
 				String par = ctx.parameterlist().getText();
 				par = par.replace("int", "");
 				par = par.replace("_Bool", "");
@@ -98,7 +98,7 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 			else 
 				inst += "()";
 			inst += ": \n";
-			infunc++;
+			infunc++; //not function 'main', there should be new indentation
 		}
 		else funcname = "";
 		obj.addCode(inst);
@@ -108,7 +108,7 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	    }
 	    if(!funcname.equals("main")) 
 	    	infunc--;
-	    obj.addCode("\n");
+	    obj.addCode("\n");//add dedentation
 		return null;
 	}
 	@Override
@@ -154,7 +154,7 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	@Override
 	public Void visitExpression(ExpressionContext ctx) {
 		if(ctx.not!=null)
-			obj.addCode("not ");
+			obj.addCode("not "); //not command added
 		visit(ctx.e1);
 		if(ctx.expression_suffix() != null) {
 			for(Expression_suffixContext e : ctx.expression_suffix())
@@ -216,12 +216,12 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitFunc_call(Func_callContext ctx) {
 		String inst = "";
 		String funcname = ctx.Identifier().getText().trim();
-		if(funcname.equals("scanf")) {
+		if(funcname.equals("scanf")) { //function scanf called
 			visit(ctx.actual());
 			obj.addCode(" = input()");
 		}
 		else {
-			if(funcname.equals("printf"))
+			if(funcname.equals("printf")) //function printf called
 				funcname = "print";
 			inst += funcname + "(";
 			obj.addCode(inst);
@@ -267,32 +267,32 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	public Void visitIf_stmt(If_stmtContext ctx) {
 		for(int i = 0; i < infunc; i++)
 			obj.addCode("\t");
-		infunc++;
+		infunc++; // add indentation
 		String inst = "if ";
 		obj.addCode(inst);
 		visit(ctx.e1);
 		obj.addCode(": \n");
 		visit(ctx.c1);
-		if(ctx.c3 != null) {
+		if(ctx.c3 != null) { //else statement
 			for(int i = 0; i < infunc-1; i++)
 				obj.addCode("\t");
 			obj.addCode("else: \n");
 			visit(ctx.c3);
 		}
-		infunc--;	
+		infunc--;	//add dedentation
 		return null;
 	}
 	@Override
 	public Void visitWhile_stmt(While_stmtContext ctx) {
 		for(int i = 0; i < infunc; i++)
 			obj.addCode("\t");
-		infunc++;
+		infunc++; // add indentation
 		String inst = "while ";
 		obj.addCode(inst);
 		visit(ctx.expression());
 		obj.addCode(": \n");
 		visit(ctx.statement());
-		infunc--;	
+		infunc--;	//add dedentation
 		return null;
 	}
 	@Override
