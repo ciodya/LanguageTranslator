@@ -1,3 +1,11 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * Acknowledgement:
+ * This file is partly based on the Fun Compiler at https://moodle.gla.ac.uk/course/view.php?id=903
+ * 
+*/
 // Test functions.
 _Bool verbose = 0;
 int fac (int n){  

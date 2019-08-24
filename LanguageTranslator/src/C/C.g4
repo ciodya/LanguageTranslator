@@ -33,10 +33,10 @@ funccall
 	;
 	
 initDeclaratorList
-    :  ( typeSpecifier (id1= Identifier ('[' DigitSequence ']')?
-    					| (id2= Identifier ('[' DigitSequence ']')? Assign c1= expression))
-   		 (Comma (id3= Identifier ('[' DigitSequence ']')?
-   		 		| (id4= Identifier ('[' DigitSequence ']')? Assign c2= expression)))? Semi)		#var_del
+    :  ( typeSpecifier (id1= Identifier ('[' DigitSequence? ']')?
+    					| (id2= Identifier ('[' DigitSequence? ']')? Assign c1= expression))
+   		 (Comma (id3= Identifier ('[' DigitSequence? ']')?
+   		 		| (id4= Identifier ('[' DigitSequence? ']')? Assign c2= expression)))? Semi)		#var_del
     ;
 functionDefinition
     :   (c1= typeSpecifier id1= Identifier LeftParen parameterlist? RightParen 
@@ -54,24 +54,24 @@ parameter
 	;
 
 blockItemList 
-    :   (statement |  (initDeclaratorList))+
+    :   (statement |  initDeclaratorList | functionDefinition)+
     ;
    
 //Expression	
 expression
-    :   e1= arithExpression (expression_suffix)*			
+    :   ( not=EXCLA)? e1= arithExpression (expression_suffix)* 			
     ;
     
 expression_suffix
-	:	op= (Less | Greater | Equal | NotEqual) e2= arithExpression
+	:	op= (Less | Greater | Equal | NotEqual ) e2= arithExpression
 	;
 
 arithExpression
-    :   e1= castExpression (arithExpression_suffix)*
+    :   e1= castExpression (arithExpression_suffix)* 
     ;
     
 arithExpression_suffix
-	:	op= (Plus | Minus | Star | Div)  e2= castExpression
+	:	op= (Plus | Minus | Star | Div | Mol)  e2= castExpression
 	;
     
 castExpression
@@ -115,6 +115,7 @@ Plus : '+';
 Minus : '-';
 Star : '*';
 Div : '/';
+Mol : '%';
 
 Assign : '=';
 

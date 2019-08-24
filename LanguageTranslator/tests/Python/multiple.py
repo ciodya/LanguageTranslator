@@ -1,3 +1,11 @@
+# /*
+#  * University of Glasgow
+#  * Msc Project fall, 2019
+#  * Author: Yidi Cao
+#  * Acknowledgement:
+#  * This file is partly based on the Fun Compiler at https://moodle.gla.ac.uk/course/view.php?id=903
+#  * 
+# */
 # Test functions with multiple parameters
 i = 9
 def test (a,b,c): #function with multiple parameters; parameter type is set to be int by default

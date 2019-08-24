@@ -2,6 +2,8 @@
  * University of Glasgow
  * Msc Project fall, 2019
  * Author: Yidi Cao
+ * Acknowledgement:
+ * This file is partly based on the Fun Compiler at https://moodle.gla.ac.uk/course/view.php?id=903
  * 
  * A visitor for code translation of Python
 */
@@ -135,12 +137,12 @@ public class pythonEncoderVisitor extends AbstractParseTreeVisitor<Void> impleme
 			    	}
 			    	else 
 			    		typespecifier = "int ";
-			    	obj.addCode(typespecifier);
+			    	obj.addCode(typespecifier +" ");
 		    	}
 		    	//generate assignment statement in C style
+		    	visit(i);
 		    	if(typespecifier.equals("char"))
 		    		obj.addCode("[] ");
-		    	visit(i);
 		    	obj.addCode(" = ");
 		    	if(typespecifier.trim().equals("_Bool") && flag == false)
 		    		obj.addCode(temp);

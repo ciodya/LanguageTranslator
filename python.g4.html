@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>python.g4</title>
+<style type="text/css">
+body { 
+  color: #000;
+  font-family: sans-serif;
+  font-size: 12px;
+  margin: 20px 5px 10px 20px;
+}
+/* resets */
+ul {
+  list-style: none;
+  padding: 0;
+}
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+img {
+  border: 0;
+}
+.clear {
+  clear: both;
+}
+.container {
+  position: relative;
+}
+/* Grammar name */
+h1 {
+  font-size: 20px;
+}
+/*Grammar documentation*/
+.gdoc {
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+#index {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  overflow: auto;
+}
+#index h2 {
+  margin: 0;
+}
+#index ol {
+  padding-left: 30px;
+  list-style-type: square;
+  color: #364559;
+}
+#index ol li {
+  margin: 2px 0;
+}
+#index ol li a {
+  color: #366199;
+  font-family: monospace;
+}
+#rules {
+  margin-left: 210px;
+  padding-left: 20px;
+  border-left: 1px solid #AAA;
+}
+.rule {
+  margin-bottom: 30px;
+}
+/* Rule name*/
+.rule h3 {
+  color: #364559;
+  background-color: #DADFE6;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 4px 5px;
+  border-bottom: 1px solid #828B99;
+}
+.rule h3 a.topLink {
+  font-family: sans-serif;
+  font-size: 10px;
+  color: #000;
+  margin-left: 20px;
+}
+.rule h3, .rule .ebnf div {
+  font-family: monospace;
+}
+/* Sections: ebnf, railroad*/
+.doc, .ebnf, .railroad {
+  padding-left: 20px;
+}
+.doc h4, .ebnf h4, .railroad h4 {
+  font-size: 12px;
+  margin: 15px 0 10px -20px;
+}
+.ebnf div {
+  background-color: #F7F7F7;
+  border-top: 1px solid #E8E8E8;
+  border-bottom: 1px solid #E8E8E8;
+  padding: 10px 5px;
+}
+.ebnf div .literal {
+  color: #0000FF;
+}
+.ebnf div .keyword {
+  color: #7F0055;
+  font-weight: bold;
+}
+.ebnf div .rule {
+  color: #004084;
+  font-weight: bold;
+}
+.ebnf div .token {
+  font-style:italic;
+}
+.railroad img {
+  display: block;
+}
+footer {
+  float: right;
+}
+</style>
+</head>
+<body>
+<h1><a href="python.g4.html" name="top">python</a></h1>
+<p class="gdoc"></p>
+<div class="container">
+<div id="index">
+<h2>Rules</h2>
+<ol>
+  <li><a href="#input">input</a></li>
+  <li><a href="#functionCall">functionCall</a></li>
+  <li><a href="#return_stmt">return_stmt</a></li>
+  <li><a href="#small_stmt">small_stmt</a></li>
+  <li><a href="#testlist">testlist</a></li>
+  <li><a href="#test">test</a></li>
+  <li><a href="#comparison">comparison</a></li>
+  <li><a href="#comparison_suffix">comparison_suffix</a></li>
+  <li><a href="#expr">expr</a></li>
+  <li><a href="#expr_suffix">expr_suffix</a></li>
+  <li><a href="#atom">atom</a></li>
+  <li><a href="#compound_stmt">compound_stmt</a></li>
+  <li><a href="#if_stmt">if_stmt</a></li>
+  <li><a href="#suite">suite</a></li>
+  <li><a href="#while_stmt">while_stmt</a></li>
+  <li><a href="#funcdef">funcdef</a></li>
+  <li><a href="#parameterlist">parameterlist</a></li>
+  <li><a href="#parameter">parameter</a></li>
+  <li><a href="#DEF">DEF</a></li>
+  <li><a href="#RETURN">RETURN</a></li>
+  <li><a href="#IF">IF</a></li>
+  <li><a href="#ELIF">ELIF</a></li>
+  <li><a href="#ELSE">ELSE</a></li>
+  <li><a href="#WHILE">WHILE</a></li>
+  <li><a href="#NOT">NOT</a></li>
+  <li><a href="#TRUE">TRUE</a></li>
+  <li><a href="#FALSE">FALSE</a></li>
+  <li><a href="#CLASS">CLASS</a></li>
+  <li><a href="#ADD">ADD</a></li>
+  <li><a href="#MINUS">MINUS</a></li>
+  <li><a href="#STAR">STAR</a></li>
+  <li><a href="#DIV">DIV</a></li>
+  <li><a href="#LESS_THAN">LESS_THAN</a></li>
+  <li><a href="#GREATER_THAN">GREATER_THAN</a></li>
+  <li><a href="#EQUALS">EQUALS</a></li>
+  <li><a href="#NOT_EQ_2">NOT_EQ_2</a></li>
+  <li><a href="#ASSIGN">ASSIGN</a></li>
+  <li><a href="#COMMA">COMMA</a></li>
+  <li><a href="#COLON">COLON</a></li>
+  <li><a href="#DOT">DOT</a></li>
+  <li><a href="#SEMI_COLON">SEMI_COLON</a></li>
+  <li><a href="#EXCLA">EXCLA</a></li>
+  <li><a href="#QUES">QUES</a></li>
+  <li><a href="#BACKSLASH">BACKSLASH</a></li>
+  <li><a href="#OPEN_PAREN">OPEN_PAREN</a></li>
+  <li><a href="#CLOSE_PAREN">CLOSE_PAREN</a></li>
+  <li><a href="#OPEN_BRACK">OPEN_BRACK</a></li>
+  <li><a href="#CLOSE_BRACK">CLOSE_BRACK</a></li>
+  <li><a href="#OPEN_BRACE">OPEN_BRACE</a></li>
+  <li><a href="#CLOSE_BRACE">CLOSE_BRACE</a></li>
+  <li><a href="#PUNC">PUNC</a></li>
+  <li><a href="#SKIP_">SKIP_</a></li>
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#NUMBER">NUMBER</a></li>
+  <li><a href="#SPACES">SPACES</a></li>
+  <li><a href="#STRING">STRING</a></li>
+  <li><a href="#COMMENT">COMMENT</a></li>
+  <li><a href="#LINE_JOINING">LINE_JOINING</a></li>
+  <li><a href="#ID_START">ID_START</a></li>
+  <li><a href="#ID_CONTINUE">ID_CONTINUE</a></li>
+  <li><a href="#NON_ZERO_DIGIT">NON_ZERO_DIGIT</a></li>
+  <li><a href="#DIGIT">DIGIT</a></li>
+  <li><a href="#NEWLINE">NEWLINE</a></li>
+</ol>
+</div>
+
+<div id="rules">
+<ul>
+  <li class="rule" id="input">
+  <h3>input <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">input</span> :  <span class="operator">(</span><a href="#NEWLINE" class="token">NEWLINE</a> <span class="operator">|</span> <a href="#small_stmt" class="rule">small_stmt</a> <span class="operator">|</span> <a href="#compound_stmt" class="rule">compound_stmt</a> <span class="operator">|</span> <a href="#functionCall" class="rule">functionCall</a><span class="operator">)</span><span class="operator">*</span> <span class="keyword">EOF</span><span class="operator">?</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/input.png" />
+  </div>
+  </li>
+  <li class="rule" id="functionCall">
+  <h3>functionCall <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">functionCall</span> :  <span class="operator">(</span><a href="#var" class="rule">var</a><span class="operator">=</span> <a href="#NAME" class="token">NAME</a> <a href="#ASSIGN" class="token">ASSIGN</a><span class="operator">)</span><span class="operator">?</span> <a href="#func" class="rule">func</a><span class="operator">=</span> <span class="operator">(</span><span class="literal">'input'</span> <span class="operator">|</span> <span class="literal">'print'</span><span class="operator">)</span> <span class="literal">'('</span> <a href="#testlist" class="rule">testlist</a><span class="operator">?</span> <span class="literal">')'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/functionCall.png" />
+  </div>
+  </li>
+  <li class="rule" id="return_stmt">
+  <h3>return_stmt <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">return_stmt</span> :  <a href="#RETURN" class="token">RETURN</a> <a href="#test" class="rule">test</a><span class="operator">?</span> <span class="operator">(</span><a href="#SEMI_COLON" class="token">SEMI_COLON</a><span class="operator">)</span><span class="operator">?</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/return_stmt.png" />
+  </div>
+  </li>
+  <li class="rule" id="small_stmt">
+  <h3>small_stmt <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">small_stmt</span> :  <a href="#e1" class="rule">e1</a><span class="operator">=</span> <a href="#testlist" class="rule">testlist</a> <span class="operator">(</span><a href="#ASSIGN" class="token">ASSIGN</a> <a href="#e2" class="rule">e2</a><span class="operator">=</span> <a href="#testlist" class="rule">testlist</a><span class="operator">)</span><span class="operator">?</span> <span class="operator">(</span><a href="#SEMI_COLON" class="token">SEMI_COLON</a><span class="operator">)</span><span class="operator">?</span> <span class="operator">(</span><a href="#NEWLINE" class="token">NEWLINE</a> <span class="operator">|</span> <span class="keyword">EOF</span><span class="operator">)</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/small_stmt.png" />
+  </div>
+  </li>
+  <li class="rule" id="testlist">
+  <h3>testlist <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">testlist</span> :  <a href="#test" class="rule">test</a> <span class="operator">(</span><a href="#COMMA" class="token">COMMA</a> <a href="#test" class="rule">test</a><span class="operator">)</span><span class="operator">*</span> <span class="operator">(</span><a href="#COMMA" class="token">COMMA</a><span class="operator">)</span><span class="operator">?</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/testlist.png" />
+  </div>
+  </li>
+  <li class="rule" id="test">
+  <h3>test <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">test</span> :  <span class="operator">(</span><a href="#NOT" class="token">NOT</a> <a href="#e1" class="rule">e1</a><span class="operator">=</span> <a href="#comparison" class="rule">comparison</a><span class="operator">)</span> <span class="operator">|</span> <span class="operator">(</span><a href="#e2" class="rule">e2</a><span class="operator">=</span> <a href="#comparison" class="rule">comparison</a><span class="operator">)</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/test.png" />
+  </div>
+  </li>
+  <li class="rule" id="comparison">
+  <h3>comparison <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">comparison</span> :  <a href="#e1" class="rule">e1</a><span class="operator">=</span> <a href="#expr" class="rule">expr</a> <span class="operator">(</span><a href="#comparison_suffix" class="rule">comparison_suffix</a><span class="operator">)</span><span class="operator">*</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/comparison.png" />
+  </div>
+  </li>
+  <li class="rule" id="comparison_suffix">
+  <h3>comparison_suffix <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">comparison_suffix</span> :  <a href="#op" class="rule">op</a><span class="operator">=</span> <span class="operator">(</span><span class="literal">'<'</span> <span class="operator">|</span><span class="literal">'>'</span> <span class="operator">|</span><span class="literal">'=='</span><span class="operator">|</span><span class="literal">'>='</span><span class="operator">|</span><span class="literal">'<='</span><span class="operator">|</span><span class="literal">'!='</span><span class="operator">)</span> <a href="#e2" class="rule">e2</a><span class="operator">=</span> <a href="#expr" class="rule">expr</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/comparison_suffix.png" />
+  </div>
+  </li>
+  <li class="rule" id="expr">
+  <h3>expr <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">expr</span> :  <a href="#e1" class="rule">e1</a><span class="operator">=</span> <a href="#atom" class="rule">atom</a> <span class="operator">(</span><a href="#expr_suffix" class="rule">expr_suffix</a><span class="operator">)</span><span class="operator">*</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/expr.png" />
+  </div>
+  </li>
+  <li class="rule" id="expr_suffix">
+  <h3>expr_suffix <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">expr_suffix</span> :  <a href="#op" class="rule">op</a><span class="operator">=</span> <span class="operator">(</span><span class="literal">'*'</span><span class="operator">|</span><span class="literal">'/'</span><span class="operator">|</span><span class="literal">'%'</span><span class="operator">|</span><span class="literal">'+'</span><span class="operator">|</span><span class="literal">'-'</span><span class="operator">)</span> <a href="#e2" class="rule">e2</a><span class="operator">=</span> <a href="#atom" class="rule">atom</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/expr_suffix.png" />
+  </div>
+  </li>
+  <li class="rule" id="atom">
+  <h3>atom <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">atom</span> :  <span class="operator">(</span><a href="#NAME" class="token">NAME</a><span class="operator">)</span> <span class="operator">#</span><a href="#id" class="rule">id</a> <span class="operator">|</span> <span class="operator">(</span><a href="#NUMBER" class="token">NUMBER</a><span class="operator">)</span> <span class="operator">#</span><a href="#num" class="rule">num</a> <span class="operator">|</span> <span class="operator">(</span><a href="#STRING" class="token">STRING</a><span class="operator">)</span> <span class="operator">#</span><a href="#string" class="rule">string</a> <span class="operator">|</span> <span class="operator">(</span><a href="#TRUE" class="token">TRUE</a><span class="operator">)</span> <span class="operator">#</span><a href="#true" class="rule">true</a> <span class="operator">|</span> <span class="operator">(</span><a href="#FALSE" class="token">FALSE</a><span class="operator">)</span> <span class="operator">#</span><a href="#false" class="rule">false</a> <span class="operator">|</span> <span class="operator">(</span><a href="#NAME" class="token">NAME</a> <span class="literal">'('</span> <span class="operator">(</span> <a href="#test" class="rule">test</a> <span class="operator">(</span><a href="#COMMA" class="token">COMMA</a> <a href="#test" class="rule">test</a> <span class="operator">)</span><span class="operator">*</span> <span class="operator">)</span><span class="operator">?</span> <span class="literal">')'</span><span class="operator">)</span> <span class="operator">#</span><a href="#funccall" class="rule">funccall</a> <span class="operator">|</span> <span class="operator">(</span><span class="literal">'('</span> <a href="#test" class="rule">test</a> <span class="literal">')'</span> <span class="operator">)</span> <span class="operator">#</span><a href="#parens" class="rule">parens</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/atom.png" />
+  </div>
+  </li>
+  <li class="rule" id="compound_stmt">
+  <h3>compound_stmt <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">compound_stmt</span> :  <a href="#if_stmt" class="rule">if_stmt</a> <span class="operator">|</span> <a href="#while_stmt" class="rule">while_stmt</a> <span class="operator">|</span> <a href="#funcdef" class="rule">funcdef</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/compound_stmt.png" />
+  </div>
+  </li>
+  <li class="rule" id="if_stmt">
+  <h3>if_stmt <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">if_stmt</span> :  <a href="#IF" class="token">IF</a> <a href="#t1" class="rule">t1</a><span class="operator">=</span> <a href="#test" class="rule">test</a> <a href="#COLON" class="token">COLON</a> <a href="#s1" class="rule">s1</a><span class="operator">=</span> <a href="#suite" class="rule">suite</a> <span class="operator">(</span><a href="#ELIF" class="token">ELIF</a> <a href="#t2" class="rule">t2</a><span class="operator">=</span> <a href="#test" class="rule">test</a> <a href="#COLON" class="token">COLON</a> <a href="#s2" class="rule">s2</a><span class="operator">=</span> <a href="#suite" class="rule">suite</a><span class="operator">)</span><span class="operator">*</span> <span class="operator">(</span><a href="#ELSE" class="token">ELSE</a> <a href="#COLON" class="token">COLON</a> <a href="#s3" class="rule">s3</a><span class="operator">=</span> <a href="#suite" class="rule">suite</a><span class="operator">)</span><span class="operator">?</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/if_stmt.png" />
+  </div>
+  </li>
+  <li class="rule" id="suite">
+  <h3>suite <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">suite</span> :  <a href="#NEWLINE" class="token">NEWLINE</a> <a href="#INDENT" class="token">INDENT</a> <span class="operator">(</span><a href="#small_stmt" class="rule">small_stmt</a> <span class="operator">|</span> <a href="#compound_stmt" class="rule">compound_stmt</a> <span class="operator">|</span> <a href="#functionCall" class="rule">functionCall</a> <span class="operator">|</span> <a href="#NEWLINE" class="token">NEWLINE</a><span class="operator">)</span><span class="operator">*</span> <a href="#return_stmt" class="rule">return_stmt</a><span class="operator">?</span> <a href="#NEWLINE" class="token">NEWLINE</a><span class="operator">*</span> <a href="#DEDENT" class="token">DEDENT</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/suite.png" />
+  </div>
+  </li>
+  <li class="rule" id="while_stmt">
+  <h3>while_stmt <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">while_stmt</span> :  <a href="#WHILE" class="token">WHILE</a> <a href="#test" class="rule">test</a> <a href="#COLON" class="token">COLON</a> <a href="#s1" class="rule">s1</a><span class="operator">=</span> <a href="#suite" class="rule">suite</a> <span class="operator">(</span><a href="#ELSE" class="token">ELSE</a> <a href="#COLON" class="token">COLON</a> <a href="#s2" class="rule">s2</a><span class="operator">=</span> <a href="#suite" class="rule">suite</a><span class="operator">)</span><span class="operator">?</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/while_stmt.png" />
+  </div>
+  </li>
+  <li class="rule" id="funcdef">
+  <h3>funcdef <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">funcdef</span> :  <a href="#DEF" class="token">DEF</a> <a href="#NAME" class="token">NAME</a> <a href="#parameterlist" class="rule">parameterlist</a> <a href="#COLON" class="token">COLON</a> <a href="#suite" class="rule">suite</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/funcdef.png" />
+  </div>
+  </li>
+  <li class="rule" id="parameterlist">
+  <h3>parameterlist <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">parameterlist</span> :  <span class="literal">'('</span> <span class="operator">(</span> <a href="#parameter" class="rule">parameter</a> <span class="operator">(</span><a href="#COMMA" class="token">COMMA</a> <a href="#parameter" class="rule">parameter</a> <span class="operator">)</span><span class="operator">*</span> <span class="operator">)</span><span class="operator">?</span> <span class="literal">')'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/parameterlist.png" />
+  </div>
+  </li>
+  <li class="rule" id="parameter">
+  <h3>parameter <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">parameter</span> :  <a href="#NAME" class="token">NAME</a> <span class="operator">(</span><a href="#COLON" class="token">COLON</a> <a href="#test" class="rule">test</a><span class="operator">)</span><span class="operator">?</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/parameter.png" />
+  </div>
+  </li>
+  <li class="rule" id="DEF">
+  <h3>DEF <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">DEF</span> :  <span class="literal">'def'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/DEF.png" />
+  </div>
+  </li>
+  <li class="rule" id="RETURN">
+  <h3>RETURN <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">RETURN</span> :  <span class="literal">'return'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/RETURN.png" />
+  </div>
+  </li>
+  <li class="rule" id="IF">
+  <h3>IF <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">IF</span> :  <span class="literal">'if'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/IF.png" />
+  </div>
+  </li>
+  <li class="rule" id="ELIF">
+  <h3>ELIF <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">ELIF</span> :  <span class="literal">'elif'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/ELIF.png" />
+  </div>
+  </li>
+  <li class="rule" id="ELSE">
+  <h3>ELSE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">ELSE</span> :  <span class="literal">'else'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/ELSE.png" />
+  </div>
+  </li>
+  <li class="rule" id="WHILE">
+  <h3>WHILE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">WHILE</span> :  <span class="literal">'while'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/WHILE.png" />
+  </div>
+  </li>
+  <li class="rule" id="NOT">
+  <h3>NOT <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">NOT</span> :  <span class="literal">'not'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/NOT.png" />
+  </div>
+  </li>
+  <li class="rule" id="TRUE">
+  <h3>TRUE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">TRUE</span> :  <span class="literal">'True'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/TRUE.png" />
+  </div>
+  </li>
+  <li class="rule" id="FALSE">
+  <h3>FALSE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">FALSE</span> :  <span class="literal">'False'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/FALSE.png" />
+  </div>
+  </li>
+  <li class="rule" id="CLASS">
+  <h3>CLASS <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">CLASS</span> :  <span class="literal">'class'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/CLASS.png" />
+  </div>
+  </li>
+  <li class="rule" id="ADD">
+  <h3>ADD <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">ADD</span> :  <span class="literal">'+'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/ADD.png" />
+  </div>
+  </li>
+  <li class="rule" id="MINUS">
+  <h3>MINUS <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">MINUS</span> :  <span class="literal">'-'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/MINUS.png" />
+  </div>
+  </li>
+  <li class="rule" id="STAR">
+  <h3>STAR <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">STAR</span> :  <span class="literal">'*'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/STAR.png" />
+  </div>
+  </li>
+  <li class="rule" id="DIV">
+  <h3>DIV <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">DIV</span> :  <span class="literal">'/'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/DIV.png" />
+  </div>
+  </li>
+  <li class="rule" id="LESS_THAN">
+  <h3>LESS_THAN <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">LESS_THAN</span> :  <span class="literal">'<'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/LESS_THAN.png" />
+  </div>
+  </li>
+  <li class="rule" id="GREATER_THAN">
+  <h3>GREATER_THAN <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">GREATER_THAN</span> :  <span class="literal">'>'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/GREATER_THAN.png" />
+  </div>
+  </li>
+  <li class="rule" id="EQUALS">
+  <h3>EQUALS <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">EQUALS</span> :  <span class="literal">'=='</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/EQUALS.png" />
+  </div>
+  </li>
+  <li class="rule" id="NOT_EQ_2">
+  <h3>NOT_EQ_2 <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">NOT_EQ_2</span> :  <span class="literal">'!='</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/NOT_EQ_2.png" />
+  </div>
+  </li>
+  <li class="rule" id="ASSIGN">
+  <h3>ASSIGN <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">ASSIGN</span> :  <span class="literal">'='</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/ASSIGN.png" />
+  </div>
+  </li>
+  <li class="rule" id="COMMA">
+  <h3>COMMA <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">COMMA</span> :  <span class="literal">','</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/COMMA.png" />
+  </div>
+  </li>
+  <li class="rule" id="COLON">
+  <h3>COLON <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">COLON</span> :  <span class="literal">':'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/COLON.png" />
+  </div>
+  </li>
+  <li class="rule" id="DOT">
+  <h3>DOT <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">DOT</span> :  <span class="literal">'.'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/DOT.png" />
+  </div>
+  </li>
+  <li class="rule" id="SEMI_COLON">
+  <h3>SEMI_COLON <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">SEMI_COLON</span> :  <span class="literal">';'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/SEMI_COLON.png" />
+  </div>
+  </li>
+  <li class="rule" id="EXCLA">
+  <h3>EXCLA <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">EXCLA</span> :  <span class="literal">'!'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/EXCLA.png" />
+  </div>
+  </li>
+  <li class="rule" id="QUES">
+  <h3>QUES <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">QUES</span> :  <span class="literal">'?'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/QUES.png" />
+  </div>
+  </li>
+  <li class="rule" id="BACKSLASH">
+  <h3>BACKSLASH <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">BACKSLASH</span> :  <span class="literal">'\\'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/BACKSLASH.png" />
+  </div>
+  </li>
+  <li class="rule" id="OPEN_PAREN">
+  <h3>OPEN_PAREN <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">OPEN_PAREN</span> :  <span class="literal">'('</span> <span class="operator">{opened++;}</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/OPEN_PAREN.png" />
+  </div>
+  </li>
+  <li class="rule" id="CLOSE_PAREN">
+  <h3>CLOSE_PAREN <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">CLOSE_PAREN</span> :  <span class="literal">')'</span> <span class="operator">{opened--;}</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/CLOSE_PAREN.png" />
+  </div>
+  </li>
+  <li class="rule" id="OPEN_BRACK">
+  <h3>OPEN_BRACK <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">OPEN_BRACK</span> :  <span class="literal">'['</span> <span class="operator">{opened++;}</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/OPEN_BRACK.png" />
+  </div>
+  </li>
+  <li class="rule" id="CLOSE_BRACK">
+  <h3>CLOSE_BRACK <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">CLOSE_BRACK</span> :  <span class="literal">']'</span> <span class="operator">{opened--;}</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/CLOSE_BRACK.png" />
+  </div>
+  </li>
+  <li class="rule" id="OPEN_BRACE">
+  <h3>OPEN_BRACE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">OPEN_BRACE</span> :  <span class="literal">'{'</span> <span class="operator">{opened++;}</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/OPEN_BRACE.png" />
+  </div>
+  </li>
+  <li class="rule" id="CLOSE_BRACE">
+  <h3>CLOSE_BRACE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">CLOSE_BRACE</span> :  <span class="literal">'}'</span> <span class="operator">{opened--;}</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/CLOSE_BRACE.png" />
+  </div>
+  </li>
+  <li class="rule" id="PUNC">
+  <h3>PUNC <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">PUNC</span> :  <a href="#ADD" class="token">ADD</a> <span class="operator">|</span> <a href="#MINUS" class="token">MINUS</a> <span class="operator">|</span> <a href="#STAR" class="token">STAR</a> <span class="operator">|</span> <a href="#DIV" class="token">DIV</a> <span class="operator">|</span> <a href="#LESS_THAN" class="token">LESS_THAN</a> <span class="operator">|</span> <a href="#GREATER_THAN" class="token">GREATER_THAN</a> <span class="operator">|</span> <a href="#EQUALS" class="token">EQUALS</a> <span class="operator">|</span> <a href="#NOT_EQ_2" class="token">NOT_EQ_2</a> <span class="operator">|</span> <a href="#EXCLA" class="token">EXCLA</a> <span class="operator">|</span> <a href="#QUES" class="token">QUES</a> <span class="operator">|</span> <a href="#ASSIGN" class="token">ASSIGN</a> <span class="operator">|</span> <a href="#COMMA" class="token">COMMA</a> <span class="operator">|</span> <a href="#COLON" class="token">COLON</a> <span class="operator">|</span> <a href="#DOT" class="token">DOT</a> <span class="operator">|</span> <a href="#SEMI_COLON" class="token">SEMI_COLON</a> <span class="operator">|</span> <a href="#BACKSLASH" class="token">BACKSLASH</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/PUNC.png" />
+  </div>
+  </li>
+  <li class="rule" id="SKIP_">
+  <h3>SKIP_ <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">SKIP_</span> :  <span class="operator">(</span> <a href="#SPACES" class="token">SPACES</a> <span class="operator">|</span> <a href="#COMMENT" class="token">COMMENT</a> <span class="operator">|</span> <a href="#LINE_JOINING" class="token">LINE_JOINING</a> <span class="operator">)</span> <span class="operator">-></span> <a href="#skip" class="rule">skip</a> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/SKIP_.png" />
+  </div>
+  </li>
+  <li class="rule" id="NAME">
+  <h3>NAME <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">NAME</span> :  <a href="#ID_START" class="token">ID_START</a> <a href="#ID_CONTINUE" class="token">ID_CONTINUE</a><span class="operator">*</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/NAME.png" />
+  </div>
+  </li>
+  <li class="rule" id="NUMBER">
+  <h3>NUMBER <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">NUMBER</span> :  <a href="#NON_ZERO_DIGIT" class="token">NON_ZERO_DIGIT</a> <a href="#DIGIT" class="token">DIGIT</a><span class="operator">*</span> <span class="operator">|</span> <span class="literal">'0'</span><span class="operator">+</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/NUMBER.png" />
+  </div>
+  </li>
+  <li class="rule" id="SPACES">
+  <h3>SPACES <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">SPACES</span> :  [<span class="literal"> \t</span>]<span class="operator">+</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/SPACES.png" />
+  </div>
+  </li>
+  <li class="rule" id="STRING">
+  <h3>STRING <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">STRING</span> :  <span class="literal">'"'</span><span class="operator">(</span><a href="#ID_START" class="token">ID_START</a> <span class="operator">|</span> <a href="#DIGIT" class="token">DIGIT</a> <span class="operator">|</span> <a href="#PUNC" class="token">PUNC</a> <span class="operator">|</span> <a href="#SPACES" class="token">SPACES</a> <span class="operator">|</span><span class="literal">'('</span> <span class="operator">|</span> <span class="literal">')'</span> <span class="operator">)</span><span class="operator">*</span><span class="literal">'"'</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/STRING.png" />
+  </div>
+  </li>
+  <li class="rule" id="COMMENT">
+  <h3>COMMENT <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">COMMENT</span> :  <span class="literal">'#'</span> <span class="operator">~</span>[<span class="literal">\r\n\f</span>]<span class="operator">*</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/COMMENT.png" />
+  </div>
+  </li>
+  <li class="rule" id="LINE_JOINING">
+  <h3>LINE_JOINING <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">LINE_JOINING</span> :  <span class="literal">'\\'</span> <a href="#SPACES" class="token">SPACES</a><span class="operator">?</span> <span class="operator">(</span> <span class="literal">'\r'</span><span class="operator">?</span> <span class="literal">'\n'</span> <span class="operator">|</span> <span class="literal">'\r'</span> <span class="operator">|</span> <span class="literal">'\f'</span><span class="operator">)</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/LINE_JOINING.png" />
+  </div>
+  </li>
+  <li class="rule" id="ID_START">
+  <h3>ID_START <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">ID_START</span> :  <span class="literal">'_'</span> <span class="operator">|</span> [<span class="literal">A-Z</span>] <span class="operator">|</span> [<span class="literal">a-z</span>] ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/ID_START.png" />
+  </div>
+  </li>
+  <li class="rule" id="ID_CONTINUE">
+  <h3>ID_CONTINUE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">ID_CONTINUE</span> :  <a href="#ID_START" class="token">ID_START</a> <span class="operator">|</span> [<span class="literal">0-9</span>] ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/ID_CONTINUE.png" />
+  </div>
+  </li>
+  <li class="rule" id="NON_ZERO_DIGIT">
+  <h3>NON_ZERO_DIGIT <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">NON_ZERO_DIGIT</span> :  [<span class="literal">1-9</span>] ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/NON_ZERO_DIGIT.png" />
+  </div>
+  </li>
+  <li class="rule" id="DIGIT">
+  <h3>DIGIT <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">DIGIT</span> :  [<span class="literal">0-9</span>] ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/DIGIT.png" />
+  </div>
+  </li>
+  <li class="rule" id="NEWLINE">
+  <h3>NEWLINE <a class="topLink" title="Go to top" href="python.g4.html">Top</a></h3>
+  <div class="doc">
+    <p>
+    </p>
+  </div>
+  <div class="ebnf">
+  <h4>Text notation:</h4>
+  <div>
+    <span class="rule">NEWLINE</span> :  <span class="operator">(</span> <span class="operator">{atStartOfInput()}?</span> <a href="#SPACES" class="token">SPACES</a> <span class="operator">|</span> <span class="operator">(</span> <span class="literal">'\r'</span><span class="operator">?</span> <span class="literal">'\n'</span> <span class="operator">|</span> <span class="literal">'\r'</span> <span class="operator">|</span> <span class="literal">'\f'</span> <span class="operator">)</span> <a href="#SPACES" class="token">SPACES</a><span class="operator">?</span><span class="operator">)</span> <span class="operator">{
+         String newLine = getText().replaceAll("[^\r\n\f]+", "");
+         String spaces = getText().replaceAll("[\r\n\f]+", "");
+         int next = _input.LA(1);
+         if (opened > 0 || next == '\r' || next == '\n' || next == '\f' || next == '#') {
+           skip();
+         }
+         else {
+           emit(commonToken(NEWLINE, newLine));
+           int indent = getIndentationCount(spaces);
+           int previous = indents.isEmpty() ? 0 : indents.peek();
+           if (indent == previous) {
+             skip();
+           }
+           else if (indent > previous) {
+             indents.push(indent);
+             emit(commonToken(pythonParser.INDENT, spaces));
+           }
+           else {
+             while(!indents.isEmpty() && indents.peek() > indent) {
+               this.emit(createDedent());
+               indents.pop();
+             }
+           }
+         }
+       }</span> ;
+  </div>
+  </div>
+  <div class="railroad">
+  <h4>Visual notation:</h4>
+  <img border="0" src="images/NEWLINE.png" />
+  </div>
+  </li>
+</ul>
+</div>
+</div>
+<footer>Generated by: <a href="https://github.com/jknack/antlr4ide">ANTLR 4 IDE</a>. Copyright (c) 2013 <a href="https://twitter.com/edgarespina">Edgar Espina</a></footer>
+</body>
+</html>

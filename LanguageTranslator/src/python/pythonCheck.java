@@ -2,6 +2,8 @@
  * University of Glasgow
  * Msc Project fall, 2019
  * Author: Yidi Cao
+ * Acknowledgement:
+ * This file is partly based on the Fun Compiler at https://moodle.gla.ac.uk/course/view.php?id=903
  * 
  * Driver for Python type checker
 */
@@ -21,7 +23,6 @@ public class pythonCheck {
 				throw new pythonException();
 			check(args[0]);
 		} catch (pythonException x) {
-			out.println("There are contextual errors!");
 		} catch (Exception x) {
 			x.printStackTrace(out);
 		}

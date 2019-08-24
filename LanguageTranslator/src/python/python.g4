@@ -136,7 +136,7 @@ expr_suffix
 atom
 	: (NAME)													#id 
     | (NUMBER) 													#num
-    | ('"'(NAME | NUMBER | PUNC | SPACES)*'"')					#string
+    | (STRING)													#string
     | (TRUE) 													#true
     | (FALSE)													#false
     | (NAME '(' ( test (COMMA test )* )? ')')					#funccall
@@ -254,6 +254,10 @@ SKIP_
  
 SPACES
  : [ \t]+
+ ;
+ 
+STRING
+ : '"'(ID_START | DIGIT | PUNC | SPACES |'(' | ')' )*'"'
  ;
 
 fragment COMMENT

@@ -2,6 +2,8 @@
  * University of Glasgow
  * Msc Project fall, 2019
  * Author: Yidi Cao
+ * Acknowledgement:
+ * This file is partly based on the Fun Compiler at https://moodle.gla.ac.uk/course/view.php?id=903
  * 
  * A visitor for contextual analysis of C.
 */ 
@@ -354,6 +356,8 @@ public class CCheckerVisitor extends AbstractParseTreeVisitor<Type> implements C
 	@Override
 	public Type visitExpression(ExpressionContext ctx) {					
 		Type t1;
+		if(ctx.not != null)
+			t1 =  Type._BOOL;
 		Type t2 = null;
 		t1 = visit(ctx.e1);
 		if(ctx.expression_suffix() != null) {

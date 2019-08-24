@@ -1,10 +1,18 @@
+/*
+ * University of Glasgow
+ * Msc Project fall, 2019
+ * Author: Yidi Cao
+ * Acknowledgement:
+ * This file is partly based on the Fun Compiler at https://moodle.gla.ac.uk/course/view.php?id=903
+ * 
+*/
 // Test assignment commands.
 int fac(int n){
 	return n;
 }
 void main(){
 	int g,e; //multiple variable declaration in one line
-	e = 3; //value assignment
+	e = 3,g = 1; //value assignment
 	g = g+1; //arithmetic expression
 	g = 1+2*g,e = e/3-4; //multiple arithmetic expression
 	g = (1+2)*g; //expression containing brackets

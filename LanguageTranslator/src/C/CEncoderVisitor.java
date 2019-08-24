@@ -2,6 +2,8 @@
  * University of Glasgow
  * Msc Project fall, 2019
  * Author: Yidi Cao
+ * Acknowledgement:
+ * This file is partly based on the Fun Compiler at https://moodle.gla.ac.uk/course/view.php?id=903
  * 
  * A visitor for code translation of C
 */
@@ -151,6 +153,8 @@ public class CEncoderVisitor extends AbstractParseTreeVisitor<Void> implements C
 	}
 	@Override
 	public Void visitExpression(ExpressionContext ctx) {
+		if(ctx.not!=null)
+			obj.addCode("not ");
 		visit(ctx.e1);
 		if(ctx.expression_suffix() != null) {
 			for(Expression_suffixContext e : ctx.expression_suffix())
