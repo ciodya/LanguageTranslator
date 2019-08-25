@@ -16,8 +16,8 @@ The source codes are written in Java using Eclipse. JavaFX, CSS and Scene Builde
 ## File Directory
 Main packages are placed in "LanguageTranslator/src" directory, and their functions are as follows:
 * Application: Driver of the application and GUI design
-* C: Controller to ranslate C source programs to Python programs
-* Python : Controller to ranslate Python  source programs to C programs
+* C: Controller to translate C source programs to Python programs
+* Python : Controller to translate Python  source programs to C programs
 * tests: test files for both directions of translation
 
 For quick function testing, there is a test.txt file containing a C source program and a Python source program, which include their respective main grammars.
